@@ -53,11 +53,10 @@ h1, h2 {
     background-color: #3300cc;
 }
 
-/* Scrollable wrapper for sticky headers and columns */
 .sizing-wrapper {
     width: 100%;
-    overflow: auto;  /* both horizontal and vertical scroll */
-    max-height: 600px; /* optional, vertical scroll */
+    overflow: auto;  /* horizontal & vertical scroll */
+    max-height: 600px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background: #fff;
@@ -65,7 +64,7 @@ h1, h2 {
 
 .sizing-table {
     border-collapse: collapse;
-    min-width: 1500px; /* wide table for all sizes */
+    min-width: 1500px;
 }
 
 .sizing-table th,
@@ -76,7 +75,7 @@ h1, h2 {
     text-align: center;
 }
 
-/* Sticky top header (sizes row) */
+/* Sticky top header */
 .sizing-table thead th {
     position: sticky;
     top: 0;
@@ -84,28 +83,17 @@ h1, h2 {
     z-index: 30;
 }
 
-/* Sticky PRODUCT column */
-.product-col {
+/* Sticky first column (Product + Neck) */
+.sticky-col {
     position: sticky;
     left: 0;
-    min-width: 180px;
+    min-width: 200px;
     background: #f8f1d3;
     font-weight: 700;
     border-right: 3px solid #c49b26;
     text-align: left;
     padding-left: 8px;
     z-index: 25;
-}
-
-/* Sticky NECK column */
-.neck-col {
-    position: sticky;
-    left: 180px; /* same as product-col width */
-    min-width: 80px;
-    background: #e8f1ff;
-    font-weight: 600;
-    border-right: 3px solid #2e6ac7;
-    z-index: 24;
 }
 
 /* Oversized sizes styling */
@@ -115,7 +103,6 @@ h1, h2 {
     font-weight: bold;
 }
 
-/* Input fields */
 input[type="number"] {
     width: 60px;
     padding: 5px;
@@ -123,7 +110,6 @@ input[type="number"] {
     text-align: center;
 }
 
-/* Grand totals */
 .grand-totals {
     margin-top: 20px;
     padding: 15px;
@@ -191,17 +177,17 @@ products.forEach((product, idx) => {
     const table = document.createElement("table");
     table.className = "sizing-table";
     
-    let html = "<thead><tr><th class='product-col'>Product</th><th class='neck-col'>Neck</th>";
+    let html = "<thead><tr><th class='sticky-col'>Product (Neck)</th>";
     product.sizes.forEach(size => html += `<th>${size}</th>`);
     html += "<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr></thead>";
 
     html += "<tbody><tr>";
-    html += `<td class='product-col'>${product.name}</td><td class='neck-col'>${product.neck}</td>`;
+    html += `<td class='sticky-col'>${product.name} (${product.neck})</td>`;
     for(let i=0;i<sizeLen;i++) html += `<td><input type='number' min='0' value='0' class='qty' data-idx='${idx}' data-size='${i}'></td>`;
     html += "<td class='total-qty' data-idx='"+idx+"'>0</td><td class='total-sales-normal' data-idx='"+idx+"'>0.00</td><td class='total-sales-promo' data-idx='"+idx+"'>0.00</td></tr>";
 
     // Normal Price row
-    html += "<tr><td class='product-col'>Normal RM</td><td class='neck-col'></td>";
+    html += "<tr><td class='sticky-col'>Normal RM</td>";
     for(let i=0;i<sizeLen;i++) {
         const val = Array.isArray(product.normal)? product.normal[i] : product.normal;
         const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
@@ -210,7 +196,7 @@ products.forEach((product, idx) => {
     html += "<td colspan='3'></td></tr>";
 
     // Promo Price row
-    html += "<tr><td class='product-col'>Promo RM</td><td class='neck-col'></td>";
+    html += "<tr><td class='sticky-col'>Promo RM</td>";
     for(let i=0;i<sizeLen;i++) {
         const val = Array.isArray(product.promo)? product.promo[i] : product.promo;
         const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
@@ -223,7 +209,7 @@ products.forEach((product, idx) => {
     tablesContainer.appendChild(table);
 });
 
-// Update totals dynamically
+// Totals and CSV code remain unchanged (same as previous)
 function updateTotals(){
     const qtyInputs = document.querySelectorAll(".qty");
     const totals = {};
@@ -263,7 +249,6 @@ function updateTotals(){
         }
     }
 
-    // Update summary
     let summaryHTML="<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>";
     Object.values(totals).forEach(data=>{
         summaryHTML+=`<tr><td>${data.name}</td><td>${data.qty}</td><td>${data.normal.toFixed(2)}</td><td>${data.promo.toFixed(2)}</td></tr>`;
@@ -273,7 +258,6 @@ function updateTotals(){
     document.getElementById("grand-normal").textContent=grandNormal.toFixed(2);
     document.getElementById("grand-promo").textContent=grandPromo.toFixed(2);
 }
-
 setInterval(updateTotals,300);
 
 function exportCSV(){
