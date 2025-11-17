@@ -55,10 +55,41 @@
       background-color: #3300cc;
     }
 
+    /* New layout: product wrapper with side label + table */
+    .product-wrapper {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .product-label {
+      min-width: 220px;
+      max-width: 260px;
+      background: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      border: 1px solid var(--border-color);
+      text-align: left;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1em;
+      line-height: 1.3;
+    }
+
+    .product-label small {
+      display: block;
+      color: var(--text-light);
+      font-weight: 600;
+      margin-top: 6px;
+      font-size: 0.9em;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
+      margin-bottom: 0;
       background-color: #fff;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       border-radius: 10px;
@@ -132,6 +163,25 @@
         left: 0;
         top: 0;
       }
+
+      /* ensure labels & tables print nicely */
+      .product-wrapper {
+        display: block !important;
+      }
+      .product-label {
+        margin-bottom: 8px;
+      }
+    }
+
+    /* responsive: stack label on small screens */
+    @media (max-width: 800px) {
+      .product-wrapper {
+        flex-direction: column;
+      }
+      .product-label {
+        width: 100%;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -193,10 +243,18 @@ const tablesContainer = document.getElementById("tables");
 
 products.forEach((product, idx) => {
   const sizeLen = product.sizes.length;
-  const table = document.createElement("table");
-  let html = `<tr><th colspan="${sizeLen + 4}" class="section-title">${idx + 1}. ${product.name} (Neck: ${product.neck})</th></tr>`;
 
-  html += `<tr><th>SIZE</th>`;
+  // wrapper that holds the side label and the table
+  const wrapper = document.createElement("div");
+  wrapper.className = "product-wrapper";
+
+  const labelDiv = document.createElement("div");
+  labelDiv.className = "product-label";
+  labelDiv.innerHTML = `${idx + 1}. ${product.name} <small>Neck: ${product.neck}</small>`;
+
+  const table = document.createElement("table");
+  // build table without the top spanning section title
+  let html = `<tr><th>SIZE</th>`;
   product.sizes.forEach(size => html += `<th>${size}</th>`);
   html += `<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr>`;
 
@@ -225,7 +283,10 @@ products.forEach((product, idx) => {
   html += `<td colspan="3"></td></tr>`;
 
   table.innerHTML = html;
-  tablesContainer.appendChild(table);
+
+  wrapper.appendChild(labelDiv);
+  wrapper.appendChild(table);
+  tablesContainer.appendChild(wrapper);
 });
 
 function updateTotals() {
