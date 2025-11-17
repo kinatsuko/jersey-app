@@ -160,10 +160,31 @@ const products = [
   { name: "Kids Short Sleeve", neck: "Collar", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 25.5, promo: 20.5 },
   { name: "Kids Long Sleeve", neck: "Round", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 21.5, promo: 18.5 },
   { name: "Kids Long Sleeve", neck: "Collar", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 31.5, promo: 23.5 },
-  { name: "Adult Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5], promo: [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5] },
-  { name: "Adult Short Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5], promo: [20.5,20.5,20.5,20.5,20.5,20.5,20.5,23.5,26.5,28.5,30.5,32.5] },
-  { name: "Adult Long Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5], promo: [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5] },
-  { name: "Adult Long Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5], promo: [23.5,23.5,23.5,23.5,23.5,23.5,23.5,26.5,29.5,31.5,33.5,35.5] },
+
+  // Adult Short Sleeve - Round
+  { name: "Adult Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
+    normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5],
+    promo:  [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5]
+  },
+
+  // Adult Short Sleeve - Collar
+  { name: "Adult Short Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
+    normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5],
+    promo:  [20.5,20.5,20.5,20.5,20.5,20.5,20.5,24.5,27.5,29.5,31.5,33.5]
+  },
+
+  // Adult Long Sleeve - Round
+  { name: "Adult Long Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
+    normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5],
+    promo:  [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5]
+  },
+
+  // Adult Long Sleeve - Collar
+  { name: "Adult Long Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
+    normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5],
+    promo:  [23.5,23.5,23.5,23.5,23.5,23.5,23.5,27.5,30.5,32.5,34.5,36.5]
+  },
+
   { name: "Adult Muslimah", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: 28, promo: 28 },
   { name: "Adult Muslimah", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: 33, promo: 33 },
 ];
@@ -213,8 +234,6 @@ function updateTotals() {
   let grandNormal = 0;
   let grandPromo = 0;
 
-  const summary = [];
-
   qtyInputs.forEach(input => {
     const idx = input.dataset.idx;
     const size = input.dataset.size;
@@ -236,6 +255,22 @@ function updateTotals() {
     grandNormal += normTotal;
     grandPromo += promoTotal;
   });
+
+  // Update per-product table totals (or zero them)
+  for (let i = 0; i < products.length; i++) {
+    const tdQty = document.querySelector(`.total-qty[data-idx="${i}"]`);
+    const tdNormal = document.querySelector(`.total-sales-normal[data-idx="${i}"]`);
+    const tdPromo = document.querySelector(`.total-sales-promo[data-idx="${i}"]`);
+    if (totals[i]) {
+      if (tdQty) tdQty.textContent = totals[i].qty;
+      if (tdNormal) tdNormal.textContent = totals[i].normal.toFixed(2);
+      if (tdPromo) tdPromo.textContent = totals[i].promo.toFixed(2);
+    } else {
+      if (tdQty) tdQty.textContent = '0';
+      if (tdNormal) tdNormal.textContent = '0.00';
+      if (tdPromo) tdPromo.textContent = '0.00';
+    }
+  }
 
   let summaryHTML = '<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>';
   Object.entries(totals).forEach(([idx, data]) => {
