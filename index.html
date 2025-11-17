@@ -81,30 +81,28 @@ h1, h2 {
 
 /* Sticky PRODUCT column */
 .product-col {
-  position: sticky;
-  left: 0;
-  min-width: 180px;       /* enough width for long names */
-  max-width: 220px;
-  background: #f8f1d3;
-  font-weight: 700;
-  border-right: 3px solid #c49b26;
-  z-index: 25;
-  text-align: left;
-  padding-left: 8px;
+    position: sticky;
+    left: 0;
+    min-width: 180px;
+    max-width: 220px;
+    background: #f8f1d3;
+    font-weight: 700;
+    border-right: 3px solid #c49b26;
+    z-index: 25;
+    text-align: left;
+    padding-left: 8px;
 }
 
 /* Sticky NECK column */
 .neck-col {
-  position: sticky;
-  left: 180px;            /* offset = PRODUCT width */
-  min-width: 80px;
-  background: #e8f1ff;
-  font-weight: 600;
-  border-right: 3px solid #2e6ac7;
-  z-index: 24;
-  text-align: center;
+    position: sticky;
+    left: 180px;
+    min-width: 50px;
+    background: #e8f1ff;
+    font-weight: 600;
+    border-right: 3px solid #2e6ac7;
+    z-index: 24;
 }
-
 
 /* Oversized sizes styling */
 .oversized {
@@ -159,7 +157,24 @@ input[type="number"] {
     <button onclick="exportCSV()">Export CSV</button>
 </div>
 
-<div class="sizing-wrapper" id="tables"></div>
+<div class="sizing-wrapper">
+  <table class="sizing-table">
+    <thead>
+      <tr>
+        <th class="product-col">Product</th>
+        <th class="neck-col">Neck</th>
+        <!-- Sizes -->
+        <th>XS</th><th>S</th><th>M</th><th>L</th><th>XL</th>
+        <th>2XL</th><th>3XL</th><th>4XL</th><th>5XL</th><th>6XL</th>
+        <th>7XL</th><th>8XL</th><th>9XL</th><th>10XL</th><th>11XL</th>
+        <th>Total QTY</th><th>Total Normal</th><th>Total Promo</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <!-- JS will populate rows here -->
+    </tbody>
+  </table>
+</div>
 
 <div class="grand-totals printable">
     <h2>Order Summary</h2>
@@ -170,143 +185,146 @@ input[type="number"] {
 
 <script>
 const products = [
-  { name: "KIDS SHORT SLEEVE", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 19.5, promo: 15.5 },
-  { name: "KIDS SHORT SLEEVE", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 25.5, promo: 20.5 },
-  { name: "KIDS LONG SLEEVE", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 21.5, promo: 18.5 },
-  { name: "KIDS LONG SLEEVE", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 31.5, promo: 23.5 },
-  { name: "ADULT SHORT SLEEVE", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 22.5, promo: 18.5 },
-  { name: "ADULT SHORT SLEEVE", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28.5, promo: 24.5 },
-  { name: "ADULT LONG SLEEVE", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 24.5, promo: 21.5 },
-  { name: "ADULT LONG SLEEVE", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 34.5, promo: 27.5 },
-  { name: "ADULT MUSLIMAH", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28, promo: 28 },
-  { name: "ADULT MUSLIMAH", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 33, promo: 33 },
+  { name: "KIDS SHORT SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 19.5, promo: 15.5 },
+  { name: "KIDS SHORT SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 25.5, promo: 20.5 },
+  { name: "KIDS LONG SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 21.5, promo: 18.5 },
+  { name: "KIDS LONG SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 31.5, promo: 23.5 },
+  { name: "ADULT SHORT SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 22.5, promo: 18.5 },
+  { name: "ADULT SHORT SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28.5, promo: 24.5 },
+  { name: "ADULT LONG SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 24.5, promo: 21.5 },
+  { name: "ADULT LONG SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 34.5, promo: 27.5 },
+  { name: "ADULT MUSLIMAH", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28, promo: 28 },
+  { name: "ADULT MUSLIMAH", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 33, promo: 33 },
 ];
 
-const tablesContainer = document.getElementById("tables");
+const tbody = document.getElementById("table-body");
 
-products.forEach((product, idx) => {
-    const sizeLen = product.sizes.length;
-    const table = document.createElement("table");
-    table.className = "sizing-table";
-    
-    let html = "<thead><tr><th class='product-col'>Product</th><th class='neck-col'>Neck</th>";
-    product.sizes.forEach(size => html += `<th>${size}</th>`);
-    html += "<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr></thead>";
+products.forEach((p, idx) => {
+  const row = document.createElement("tr");
 
-    html += "<tbody><tr>";
-    html += `<td class='product-col'>${product.name}</td><td class='neck-col'>${product.neck}</td>`;
-    for(let i=0;i<sizeLen;i++) html += `<td><input type='number' min='0' value='0' class='qty' data-idx='${idx}' data-size='${i}'></td>`;
-    html += "<td class='total-qty' data-idx='"+idx+"'>0</td><td class='total-sales-normal' data-idx='"+idx+"'>0.00</td><td class='total-sales-promo' data-idx='"+idx+"'>0.00</td></tr>";
+  // PRODUCT & NECK
+  let html = `<td class="product-col">${p.name}</td><td class="neck-col">${p.neck}</td>`;
 
-    // Normal Price row
-    html += "<tr><td class='product-col'>Normal RM</td><td class='neck-col'></td>";
-    for(let i=0;i<sizeLen;i++) {
-        const val = Array.isArray(product.normal)? product.normal[i] : product.normal;
-        const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
-        html += `<td class='${oversize}'>${val.toFixed(2)}</td>`;
-    }
-    html += "<td colspan='3'></td></tr>";
+  // Qty inputs for each size
+  p.sizes.forEach((size, i) => {
+    html += `<td><input type="number" min="0" value="0" class="qty" data-idx="${idx}" data-size="${i}"></td>`;
+  });
 
-    // Promo Price row
-    html += "<tr><td class='product-col'>Promo RM</td><td class='neck-col'></td>";
-    for(let i=0;i<sizeLen;i++) {
-        const val = Array.isArray(product.promo)? product.promo[i] : product.promo;
-        const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
-        html += `<td class='${oversize}'>${val.toFixed(2)}</td>`;
-    }
-    html += "<td colspan='3'></td></tr>";
+  html += `<td class="total-qty" data-idx="${idx}">0</td>
+           <td class="total-sales-normal" data-idx="${idx}">0.00</td>
+           <td class="total-sales-promo" data-idx="${idx}">0.00</td>`;
 
-    html += "</tbody>";
-    table.innerHTML = html;
-    tablesContainer.appendChild(table);
+  row.innerHTML = html;
+  tbody.appendChild(row);
+
+  // Normal Price row
+  const normRow = document.createElement("tr");
+  let normHTML = `<td class="product-col">Normal RM</td><td class="neck-col"></td>`;
+  p.sizes.forEach(size => {
+    const val = Array.isArray(p.normal)? p.normal[i]: p.normal;
+    const oversized = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(size)? "oversized":"";
+    normHTML += `<td class="${oversized}">${p.normal.toFixed(2)}</td>`;
+  });
+  normHTML += `<td colspan="3"></td>`;
+  normRow.innerHTML = normHTML;
+  tbody.appendChild(normRow);
+
+  // Promo Price row
+  const promoRow = document.createElement("tr");
+  let promoHTML = `<td class="product-col">Promo RM</td><td class="neck-col"></td>`;
+  p.sizes.forEach(size => {
+    const oversized = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(size)? "oversized":"";
+    promoHTML += `<td class="${oversized}">${p.promo.toFixed(2)}</td>`;
+  });
+  promoHTML += `<td colspan="3"></td>`;
+  promoRow.innerHTML = promoHTML;
+  tbody.appendChild(promoRow);
 });
 
-// Update totals dynamically
+// Dynamic totals
 function updateTotals(){
-    const qtyInputs = document.querySelectorAll(".qty");
-    const totals = {};
-    let grandNormal = 0;
-    let grandPromo = 0;
+  const qtyInputs = document.querySelectorAll(".qty");
+  const totals = {};
+  let grandNormal = 0;
+  let grandPromo = 0;
 
-    qtyInputs.forEach(input=>{
-        const idx = input.dataset.idx;
-        const size = input.dataset.size;
-        const qty = parseInt(input.value)||0;
-        if(qty===0) return;
-        const product = products[idx];
-        const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
-        const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
+  qtyInputs.forEach(input=>{
+    const idx = input.dataset.idx;
+    const size = input.dataset.size;
+    const qty = parseInt(input.value)||0;
+    if(qty===0) return;
+    const product = products[idx];
+    const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
+    const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
 
-        totals[idx] = totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
-        totals[idx].qty += qty;
-        totals[idx].normal += qty*norm;
-        totals[idx].promo += qty*promo;
+    totals[idx] = totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
+    totals[idx].qty += qty;
+    totals[idx].normal += qty*norm;
+    totals[idx].promo += qty*promo;
 
-        grandNormal += qty*norm;
-        grandPromo += qty*promo;
-    });
+    grandNormal += qty*norm;
+    grandPromo += qty*promo;
+  });
 
-    for(let i=0;i<products.length;i++){
-        const tdQty=document.querySelector(".total-qty[data-idx='"+i+"']");
-        const tdNormal=document.querySelector(".total-sales-normal[data-idx='"+i+"']");
-        const tdPromo=document.querySelector(".total-sales-promo[data-idx='"+i+"']");
-        if(totals[i]){
-            if(tdQty) tdQty.textContent=totals[i].qty;
-            if(tdNormal) tdNormal.textContent=totals[i].normal.toFixed(2);
-            if(tdPromo) tdPromo.textContent=totals[i].promo.toFixed(2);
-        }else{
-            if(tdQty) tdQty.textContent='0';
-            if(tdNormal) tdNormal.textContent='0.00';
-            if(tdPromo) tdPromo.textContent='0.00';
-        }
+  for(let i=0;i<products.length;i++){
+    const tdQty=document.querySelector(".total-qty[data-idx='"+i+"']");
+    const tdNormal=document.querySelector(".total-sales-normal[data-idx='"+i+"']");
+    const tdPromo=document.querySelector(".total-sales-promo[data-idx='"+i+"']");
+    if(totals[i]){
+      if(tdQty) tdQty.textContent=totals[i].qty;
+      if(tdNormal) tdNormal.textContent=totals[i].normal.toFixed(2);
+      if(tdPromo) tdPromo.textContent=totals[i].promo.toFixed(2);
+    } else {
+      if(tdQty) tdQty.textContent='0';
+      if(tdNormal) tdNormal.textContent='0.00';
+      if(tdPromo) tdPromo.textContent='0.00';
     }
+  }
 
-    // Update summary
-    let summaryHTML="<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>";
-    Object.values(totals).forEach(data=>{
-        summaryHTML+=`<tr><td>${data.name}</td><td>${data.qty}</td><td>${data.normal.toFixed(2)}</td><td>${data.promo.toFixed(2)}</td></tr>`;
-    });
-    summaryHTML+="</table>";
-    document.getElementById("print-summary").innerHTML=summaryHTML;
-    document.getElementById("grand-normal").textContent=grandNormal.toFixed(2);
-    document.getElementById("grand-promo").textContent=grandPromo.toFixed(2);
+  // Print summary
+  let summaryHTML="<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>";
+  Object.values(totals).forEach(data=>{
+    summaryHTML+=`<tr><td>${data.name}</td><td>${data.qty}</td><td>${data.normal.toFixed(2)}</td><td>${data.promo.toFixed(2)}</td></tr>`;
+  });
+  summaryHTML+="</table>";
+  document.getElementById("print-summary").innerHTML=summaryHTML;
+  document.getElementById("grand-normal").textContent=grandNormal.toFixed(2);
+  document.getElementById("grand-promo").textContent=grandPromo.toFixed(2);
 }
 
 setInterval(updateTotals,300);
 
 function exportCSV(){
-    const rows=[["Item","Qty","Normal (RM)","Promo (RM)"]];
-    const qtyInputs = document.querySelectorAll(".qty");
-    const totals = {};
+  const rows=[["Item","Qty","Normal (RM)","Promo (RM)"]];
+  const qtyInputs = document.querySelectorAll(".qty");
+  const totals = {};
 
-    qtyInputs.forEach(input=>{
-        const idx=input.dataset.idx;
-        const size=input.dataset.size;
-        const qty=parseInt(input.value)||0;
-        if(qty===0) return;
-        const product = products[idx];
-        const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
-        const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
-        totals[idx]=totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
-        totals[idx].qty += qty;
-        totals[idx].normal += qty*norm;
-        totals[idx].promo += qty*promo;
-    });
+  qtyInputs.forEach(input=>{
+    const idx=input.dataset.idx;
+    const size=input.dataset.size;
+    const qty=parseInt(input.value)||0;
+    if(qty===0) return;
+    const product = products[idx];
+    const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
+    const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
+    totals[idx] = totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
+    totals[idx].qty += qty;
+    totals[idx].normal += qty*norm;
+    totals[idx].promo += qty*promo;
+  });
 
-    Object.values(totals).forEach(data=>{
-        rows.push([data.name,data.qty,data.normal.toFixed(2),data.promo.toFixed(2)]);
-    });
+  Object.values(totals).forEach(data=>{
+    rows.push([data.name,data.qty,data.normal.toFixed(2),data.promo.toFixed(2)]);
+  });
 
-    const csvContent="data:text/csv;charset=utf-8,"+rows.map(e=>e.join(",")).join("\n");
-    const link=document.createElement("a");
-    link.setAttribute("href",encodeURI(csvContent));
-    link.setAttribute("download","jersey_price_summary.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const csvContent="data:text/csv;charset=utf-8,"+rows.map(e=>e.join(",")).join("\n");
+  const link=document.createElement("a");
+  link.setAttribute("href",encodeURI(csvContent));
+  link.setAttribute("download","jersey_price_summary.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 </script>
-
 </body>
 </html>
-
