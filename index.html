@@ -3,272 +3,426 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sticky Sizing Table — Up to 11XL (includes Kids)</title>
+<title>Jersey Sublimation Price (Daily) — Unified Sticky Sizes up to 11XL</title>
 <style>
   :root{
-    --header-bg: #0f172a;  /* dark slate */
-    --header-color: #fff;
-    --alt-row: #fbfdff;
-    --cell-padding: 8px 10px;
-    --first-col-bg: #f3f4f6;
-    --table-border: #e6e9ee;
-    --max-width: 100%;
+    --primary: #4400ff;
+    --light-bg: #f9f9fc;
+    --border-color: #ddd;
+    --accent: #ff6b6b;
+    --text-dark: #333;
+    --text-light: #666;
+    --oversize-bg: #ffe5e5;
+    --oversize-text: #a80000;
   }
 
   body{
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    padding: 20px;
-    background: #f8fafc;
-    color: #0b1220;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 28px;
   }
 
-  h1{ margin: 0 0 12px 0; font-size: 18px; }
-  p{ margin: 0 0 18px 0; color: #334155; }
-
-  .table-wrap{
-    max-width: var(--max-width);
-    border: 1px solid var(--table-border);
-    border-radius: 8px;
-    overflow: auto; /* enables both axis scrolling */
-    background: white;
-    box-shadow: 0 6px 20px rgba(12, 18, 31, 0.06);
+  .branding{
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
   }
 
-  table{
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-    min-width: 920px; /* ensures horizontal scroll on smaller screens */
-    table-layout: fixed;
+  h1{
+    margin: 0 0 14px 0;
+    color: var(--primary);
+    font-size: 1.25rem;
   }
 
-  thead th{
-    position: sticky;
-    top: 0;
-    background: var(--header-bg);
-    color: var(--header-color);
-    font-weight: 600;
-    padding: var(--cell-padding);
-    text-align: center;
-    border-bottom: 2px solid rgba(255,255,255,0.06);
-    z-index: 3; /* above body cells */
-    white-space: nowrap;
-    font-size: 13px;
-  }
-
-  thead th.size-col{
-    min-width: 64px;
-  }
-
-  tbody td{
-    padding: var(--cell-padding);
-    text-align: center;
-    border-bottom: 1px solid var(--table-border);
-    font-size: 13px;
-    background: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  tbody tr:nth-child(even) td{
-    background: var(--alt-row);
-  }
-
-  /* sticky first column (product name) */
-  th.first-col, td.first-col{
-    position: sticky;
-    left: 0;
-    z-index: 4; /* above other cells but below header (header has 3, so bump header) */
-    background: var(--first-col-bg);
-    text-align: left;
-    padding-left: 12px;
-    min-width: 220px;
-    max-width: 320px;
-    font-weight: 600;
-  }
-
-  /* ensure header first-col stays above other header cells */
-  thead th.first-col{
-    z-index: 6; /* highest */
-    background: var(--header-bg);
-    color: var(--header-color);
-  }
-
-  /* small responsive tweaks */
-  @media (max-width: 720px){
-    .table-wrap{ border-radius: 0; }
-    th.first-col, td.first-col{ min-width: 160px; }
-    table{ min-width: 1200px; } /* encourage horizontal scrolling on phones */
-  }
-
-  /* optional: hover highlight */
-  tbody tr:hover td{ outline: 2px solid rgba(14,165,233,0.08); }
-
-  /* helper controls */
   .controls{
-    margin-bottom: 12px;
     display:flex;
     gap:10px;
     align-items:center;
+    margin-bottom:12px;
   }
-  .controls label{ font-size:13px; color:#334155; }
-  .btn{
-    appearance:none;
-    border:1px solid #cbd5e1;
-    background:white;
-    padding:6px 10px;
-    border-radius:6px;
+  .controls button{
+    background-color:var(--primary);
+    color:#fff;
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
     cursor:pointer;
-    font-size:13px;
+    font-size:0.95rem;
+  }
+  .controls button.secondary{
+    background:#fff;
+    color:var(--primary);
+    border:1px solid var(--border-color);
+  }
+
+  /* container that holds the table and makes sticky header work */
+  .table-wrap{
+    width:100%;
+    max-height:520px; /* adjust as needed */
+    overflow:auto;
+    border-radius:10px;
+    border:1px solid var(--border-color);
+    background:#fff;
+    box-shadow:0 6px 20px rgba(12,18,31,0.04);
+  }
+
+  table{
+    border-collapse:separate;
+    border-spacing:0;
+    width:100%;
+    min-width:1200px; /* ensures horizontal scroll for many sizes */
+    table-layout:fixed;
+  }
+
+  thead th{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border-color);
+    background:#f0f0ff;
+    text-align:center;
+    font-weight:700;
+    font-size:0.93rem;
+  }
+
+  /* sticky header row inside the scroll container (Type A) */
+  thead th{
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  tbody td{
+    padding:8px 10px;
+    border-bottom:1px solid var(--border-color);
+    text-align:center;
+    font-size:0.92rem;
+    background: #fff;
+    overflow:hidden;
+    white-space:nowrap;
+  }
+
+  tbody tr:nth-child(even) td{
+    background: #fbfdff;
+  }
+
+  /* sticky first column */
+  th.first-col, td.first-col{
+    position: sticky;
+    left: 0;
+    z-index: 6; /* above other cells so it overlays when needed */
+    text-align:left;
+    padding-left:14px;
+    background:#ffffff;
+    min-width:260px;
+    max-width:360px;
+    font-weight:700;
+  }
+
+  thead th.first-col{
+    z-index: 8; /* header first-col above everything */
+    background:#f0f0ff;
+  }
+
+  /* oversize marker */
+  .oversized{
+    background-color:var(--oversize-bg);
+    color:var(--oversize-text);
+    font-weight:700;
+  }
+
+  /* numeric input */
+  input.qty {
+    width:70px;
+    padding:6px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    text-align:center;
+  }
+
+  .totals-row td{
+    font-weight:700;
+    background:#fff;
+  }
+
+  .summary-box{
+    margin-top:14px;
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+  }
+  .grand-totals{
+    background:#fff;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid var(--border-color);
+    box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    min-width:260px;
+  }
+  .grand-totals p{ margin:6px 0; font-size:0.98rem; }
+  .grand-totals span{ font-weight:700; color:var(--accent); }
+
+  @media print {
+    body * { visibility: hidden; }
+    .printable, .printable * { visibility: visible; }
+    .printable { position:absolute; left:0; top:0; width:100%; }
+    .table-wrap { max-height: none !important; overflow: visible !important; }
+  }
+
+  @media (max-width:900px){
+    .table-wrap{ max-height:420px; }
+    th.first-col, td.first-col{ min-width:200px; }
+    table{ min-width:1100px; }
   }
 </style>
 </head>
 <body>
 
-<h1>Sticky Sizing Table — Sizes up to 11XL (Kids included)</h1>
-<p>Top header (sizes) is sticky. First column (product name) is sticky at left. The table is generated dynamically so you can change which sizes to show.</p>
+<div class="branding">Inspirazs Sdn. Bhd.</div>
+<h1>Jersey Sublimation Price (Daily)</h1>
 
-<div class="controls">
-  <label>
-    <input id="includeKids" type="checkbox" checked /> Include Kids sizes
-  </label>
-  <label>
-    <input id="includeHuge" type="checkbox" checked /> Include sizes up to 11XL
-  </label>
-  <button id="regen" class="btn">Regenerate Table</button>
-  <div style="margin-left:auto; font-size:13px; color:#475569">
-    Columns: <span id="colCount">—</span>
-  </div>
+<div class="controls no-print">
+  <button onclick="window.print()">Print</button>
+  <button onclick="exportCSV()" class="secondary">Export CSV</button>
 </div>
 
-<div class="table-wrap" id="tableWrap" role="region" aria-label="Sizing table">
-  <!-- table inserted by JS -->
+<div class="table-wrap printable" id="table-wrap" aria-label="Sizing table with sticky header">
+  <table id="sizing-table" role="table" aria-label="Unified sizing table">
+    <thead id="table-head">
+      <!-- generated -->
+    </thead>
+    <tbody id="table-body">
+      <!-- generated -->
+    </tbody>
+  </table>
+</div>
+
+<div class="summary-box printable">
+  <div class="grand-totals">
+    <h3 style="margin:0 0 8px 0;">Order Summary</h3>
+    <div id="print-summary"></div>
+    <p style="margin-top:8px;"><strong>Total Normal:</strong> RM <span id="grand-normal">0.00</span></p>
+    <p><strong>Total Promo:</strong> RM <span id="grand-promo">0.00</span></p>
+  </div>
 </div>
 
 <script>
 /*
-  Dynamic Sticky Sizing Table
-  - Products are the 10 items you previously specified (kids + adult, R/C types).
-  - Sizes are generated:
-      Kids (if includeKids): KID-XS, KID-S, KID-M, KID-L, KID-XL
-      Adults: XS, S, M, L, XL, 2XL, 3XL, ... up to 11XL if includeHuge true
-  - Table markup created dynamically for easy integration into your system.
-  - Replace data cell generation with actual price or input elements for your calculator.
+  Single unified table:
+  - Sizes: XS -> 11XL (Option A)
+  - First column: Product / Neck (sticky)
+  - For cells: editable qty input
+  - Live per-product totals & grand totals
+  - Exports CSV
+  - Print friendly (printable container)
 */
 
+// sizes XS -> 11XL
+const sizes = ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"];
+
+// product list — uses your values but normalized so length may differ for price arrays.
+// If a product has an array shorter than sizes, the last value will be reused for remaining sizes.
 const products = [
-  "KIDS SHORT SLEEVE - R",
-  "KIDS SHORT SLEEVE - C",
-  "KIDS LONG SLEEVE - R",
-  "KIDS LONG SLEEVE - C",
-  "ADULT SHORT SLEEVE - R",
-  "ADULT SHORT SLEEVE - C",
-  "ADULT LONG SLEEVE - R",
-  "ADULT LONG SLEEVE - C",
-  "ADULT MUSLIMAH - R",
-  "ADULT MUSLIMAH - C"
+  // Kids (we will use same sizes now)
+  { name: "KIDS SHORT SLEEVE", neck: "Round", normal: 19.5, promo: 15.5 },
+  { name: "KIDS SHORT SLEEVE", neck: "Collar", normal: 25.5, promo: 20.5 },
+  { name: "KIDS LONG SLEEVE", neck: "Round", normal: 21.5, promo: 18.5 },
+  { name: "KIDS LONG SLEEVE", neck: "Collar", normal: 31.5, promo: 23.5 },
+
+  // Adults
+  { name: "ADULT SHORT SLEEVE", neck: "Round",
+    normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5,33.5,35.5,37.5],
+    promo:  [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5,29.5,31.5,33.5]
+  },
+  { name: "ADULT SHORT SLEEVE", neck: "Collar",
+    normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5,39.5,41.5,43.5],
+    promo:  [20.5,20.5,20.5,20.5,20.5,20.5,20.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5]
+  },
+  { name: "ADULT LONG SLEEVE", neck: "Round",
+    normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5],
+    promo:  [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5,32.5,34.5,36.5]
+  },
+  { name: "ADULT LONG SLEEVE", neck: "Collar",
+    normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5,45.5,47.5,49.5],
+    promo:  [23.5,23.5,23.5,23.5,23.5,23.5,23.5,27.5,30.5,32.5,34.5,36.5,38.5,40.5,42.5]
+  },
+  { name: "ADULT MUSLIMAH", neck: "Round", normal: 28.0, promo: 28.0 },
+  { name: "ADULT MUSLIMAH", neck: "Collar", normal: 33.0, promo: 33.0 }
 ];
 
-function generateSizeList(includeKids=true, includeHuge=true){
-  const kids = ["KIDS XS","KIDS S","KIDS M","KIDS L","KIDS XL"];
-  const adultsBase = ["XS","S","M","L","XL"];
-  // generate numeric XLs up to 11XL (2XL..11XL)
-  const numericXLs = [];
-  const maxXL = includeHuge ? 11 : 5; // if not huge then go up to 5 (i.e., 5XL)
-  for(let i=2; i<=maxXL; i++){
-    numericXLs.push(i + "XL");
+// Helper: ensure price retrieval handles arrays shorter than sizes
+function getPrice(product, index, type) {
+  const val = product[type];
+  if (Array.isArray(val)) {
+    if (index < val.length) return Number(val[index]);
+    return Number(val[val.length - 1]); // fallback to last available price
   }
-  const sizes = [];
-  if(includeKids){
-    sizes.push(...kids);
-    sizes.push("---"); // separator column (optional) to visually separate kids/adult
-  }
-  sizes.push(...adultsBase);
-  sizes.push(...numericXLs);
-  return sizes;
+  return Number(val); // scalar
 }
 
-function buildTable(sizes){
-  const wrap = document.getElementById('tableWrap');
-  const table = document.createElement('table');
+// Build table header and body
+function buildTable() {
+  const thead = document.getElementById("table-head");
+  const tbody = document.getElementById("table-body");
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
 
-  // THEAD
-  const thead = document.createElement('thead');
-  const hrow = document.createElement('tr');
-
-  const thFirst = document.createElement('th');
-  thFirst.className = 'first-col';
-  thFirst.textContent = 'Product / Size';
-  hrow.appendChild(thFirst);
-
+  // Header row
+  let thHtml = `<tr><th class="first-col">Product / Neck</th>`;
   sizes.forEach(sz => {
-    const th = document.createElement('th');
-    th.className = 'size-col';
-    th.textContent = sz;
-    hrow.appendChild(th);
+    thHtml += `<th>${sz}</th>`;
   });
+  thHtml += `<th>Total QTY</th><th>Total Normal (RM)</th><th>Total Promo (RM)</th></tr>`;
+  thead.innerHTML = thHtml;
 
-  thead.appendChild(hrow);
-  table.appendChild(thead);
+  // Body rows: each product a single row with qty inputs and price rows embedded below
+  products.forEach((product, pIdx) => {
+    // Qty row
+    let rowHtml = `<tr data-idx="${pIdx}">`;
+    rowHtml += `<td class="first-col">${pIdx + 1}. ${product.name} <div style="font-weight:600; color:var(--text-light); font-size:0.85rem;">Neck: ${product.neck}</div></td>`;
+    for (let i = 0; i < sizes.length; i++) {
+      rowHtml += `<td><input type="number" min="0" value="0" class="qty" data-idx="${pIdx}" data-size="${i}" aria-label="Qty ${product.name} ${product.neck} ${sizes[i]}"></td>`;
+    }
+    rowHtml += `<td class="total-qty" data-idx="${pIdx}">0</td><td class="total-normal" data-idx="${pIdx}">0.00</td><td class="total-promo" data-idx="${pIdx}">0.00</td>`;
+    rowHtml += `</tr>`;
 
-  // TBODY
-  const tbody = document.createElement('tbody');
-  products.forEach((prod, ridx) => {
-    const tr = document.createElement('tr');
+    // Normal price row (display only)
+    let normalRow = `<tr class="totals-row"><td style="font-weight:700;">Normal RM</td>`;
+    for (let i = 0; i < sizes.length; i++) {
+      const normal = getPrice(product, i, 'normal');
+      const isOversized = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(sizes[i]);
+      normalRow += `<td${isOversized ? ' class="oversized"' : ''}>${normal.toFixed(2)}</td>`;
+    }
+    normalRow += `<td colspan="3"></td></tr>`;
 
-    const tdFirst = document.createElement('td');
-    tdFirst.className = 'first-col';
-    tdFirst.textContent = prod;
-    tr.appendChild(tdFirst);
+    // Promo price row (display only)
+    let promoRow = `<tr class="totals-row"><td style="font-weight:700;">Promo RM</td>`;
+    for (let i = 0; i < sizes.length; i++) {
+      const promo = getPrice(product, i, 'promo');
+      const isOversized = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(sizes[i]);
+      promoRow += `<td${isOversized ? ' class="oversized"' : ''}>${promo.toFixed(2)}</td>`;
+    }
+    promoRow += `<td colspan="3"></td></tr>`;
 
-    sizes.forEach((sz, cidx) => {
-      const td = document.createElement('td');
-
-      // Example: you can place inputs, price values, or placeholders here.
-      if(sz === '---'){
-        td.textContent = ''; // visual separator
-      } else {
-        // Example placeholder: qty 0 or dash
-        td.textContent = '-';
-      }
-
-      // Example: attach data attributes for integration
-      td.dataset.product = prod;
-      td.dataset.size = sz;
-      tr.appendChild(td);
-    });
-
-    tbody.appendChild(tr);
+    tbody.insertAdjacentHTML('beforeend', rowHtml);
+    tbody.insertAdjacentHTML('beforeend', normalRow);
+    tbody.insertAdjacentHTML('beforeend', promoRow);
   });
-
-  table.appendChild(tbody);
-  // clear wrap and append
-  wrap.innerHTML = '';
-  wrap.appendChild(table);
-
-  // show column count
-  document.getElementById('colCount').textContent = sizes.length;
 }
 
-// initial render
-(function init(){
-  const includeKidsCheckbox = document.getElementById('includeKids');
-  const includeHugeCheckbox = document.getElementById('includeHuge');
-  const regenBtn = document.getElementById('regen');
+// compute totals and update DOM
+function updateTotals() {
+  const qtyInputs = document.querySelectorAll("input.qty");
+  const totalsByProduct = {};
+  let grandNormal = 0;
+  let grandPromo = 0;
 
-  const render = () => {
-    const sizes = generateSizeList(includeKidsCheckbox.checked, includeHugeCheckbox.checked);
-    buildTable(sizes);
-  };
+  qtyInputs.forEach(input => {
+    const pIdx = Number(input.dataset.idx);
+    const sizeIdx = Number(input.dataset.size);
+    const qty = Math.max(0, parseInt(input.value) || 0);
+    if (qty <= 0) return;
 
-  regenBtn.addEventListener('click', render);
-  // render on change quickly
-  includeKidsCheckbox.addEventListener('change', render);
-  includeHugeCheckbox.addEventListener('change', render);
+    const product = products[pIdx];
+    const normal = getPrice(product, sizeIdx, 'normal');
+    const promo = getPrice(product, sizeIdx, 'promo');
 
-  render();
-})();
+    totalsByProduct[pIdx] = totalsByProduct[pIdx] || { qty: 0, normal: 0, promo: 0, name: `${product.name} (${product.neck})` };
+    totalsByProduct[pIdx].qty += qty;
+    totalsByProduct[pIdx].normal += qty * normal;
+    totalsByProduct[pIdx].promo += qty * promo;
+
+    grandNormal += qty * normal;
+    grandPromo += qty * promo;
+  });
+
+  // Update each product's totals cells
+  for (let i = 0; i < products.length; i++) {
+    const qtyCell = document.querySelector(`.total-qty[data-idx="${i}"]`);
+    const normalCell = document.querySelector(`.total-normal[data-idx="${i}"]`);
+    const promoCell = document.querySelector(`.total-promo[data-idx="${i}"]`);
+    const data = totalsByProduct[i];
+    if (data) {
+      if (qtyCell) qtyCell.textContent = data.qty;
+      if (normalCell) normalCell.textContent = data.normal.toFixed(2);
+      if (promoCell) promoCell.textContent = data.promo.toFixed(2);
+    } else {
+      if (qtyCell) qtyCell.textContent = '0';
+      if (normalCell) normalCell.textContent = '0.00';
+      if (promoCell) promoCell.textContent = '0.00';
+    }
+  }
+
+  // Build print-summary table
+  let summaryHtml = '<table style="border-collapse:collapse;width:100%">';
+  summaryHtml += '<tr style="background:#f0f0ff"><th style="text-align:left;padding:6px;border:1px solid var(--border-color)">Item</th><th style="padding:6px;border:1px solid var(--border-color)">Qty</th><th style="padding:6px;border:1px solid var(--border-color)">Normal (RM)</th><th style="padding:6px;border:1px solid var(--border-color)">Promo (RM)</th></tr>';
+  Object.values(totalsByProduct).forEach(it => {
+    summaryHtml += `<tr><td style="padding:6px;border:1px solid var(--border-color)">${it.name}</td><td style="padding:6px;border:1px solid var(--border-color)">${it.qty}</td><td style="padding:6px;border:1px solid var(--border-color)">${it.normal.toFixed(2)}</td><td style="padding:6px;border:1px solid var(--border-color)">${it.promo.toFixed(2)}</td></tr>`;
+  });
+  summaryHtml += '</table>';
+
+  document.getElementById("print-summary").innerHTML = summaryHtml;
+  document.getElementById("grand-normal").textContent = grandNormal.toFixed(2);
+  document.getElementById("grand-promo").textContent = grandPromo.toFixed(2);
+}
+
+// CSV export (by aggregation per product)
+function exportCSV() {
+  const qtyInputs = document.querySelectorAll("input.qty");
+  const totals = {};
+  qtyInputs.forEach(input => {
+    const pIdx = Number(input.dataset.idx);
+    const sizeIdx = Number(input.dataset.size);
+    const qty = Math.max(0, parseInt(input.value) || 0);
+    if (qty <= 0) return;
+    const product = products[pIdx];
+    const normal = getPrice(product, sizeIdx, 'normal');
+    const promo = getPrice(product, sizeIdx, 'promo');
+
+    totals[pIdx] = totals[pIdx] || { name: `${product.name} (${product.neck})`, qty: 0, normal: 0, promo: 0 };
+    totals[pIdx].qty += qty;
+    totals[pIdx].normal += qty * normal;
+    totals[pIdx].promo += qty * promo;
+  });
+
+  const rows = [["Item","Qty","Normal (RM)","Promo (RM)"]];
+  Object.values(totals).forEach(r => rows.push([r.name, r.qty, r.normal.toFixed(2), r.promo.toFixed(2)]));
+
+  if (rows.length === 1) {
+    alert("No quantities entered — nothing to export.");
+    return;
+  }
+
+  const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const encoded = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encoded);
+  link.setAttribute('download', 'jersey_price_summary.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Attach input listeners (event delegation)
+function attachListeners() {
+  const wrap = document.getElementById("table-wrap");
+  wrap.addEventListener('input', (ev) => {
+    const targ = ev.target;
+    if (targ && targ.classList && targ.classList.contains('qty')) {
+      // sanitize min value
+      if (targ.value === '' || Number(targ.value) < 0) targ.value = 0;
+      updateTotals();
+    }
+  });
+
+  // optional: respond to arrow keys + etc — browsers handle numeric inputs
+}
+
+// init
+buildTable();
+attachListeners();
+updateTotals(); // initial
 </script>
 
 </body>
