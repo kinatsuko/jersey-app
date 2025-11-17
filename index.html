@@ -86,14 +86,21 @@
       font-size: 0.9em;
     }
 
+    /* table */
+    .table-wrap {
+      width: 100%;
+      overflow: auto;
+      border-radius: 10px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 0;
       background-color: #fff;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      border-radius: 10px;
       overflow: hidden;
+      min-width: 640px; /* ensure horizontal scroll if many sizes */
     }
 
     th, td {
@@ -101,11 +108,21 @@
       padding: 10px;
       text-align: center;
       font-size: 0.92em;
+      background-clip: padding-box;
     }
 
     th {
       background-color: #f0f0ff;
       color: var(--text-dark);
+    }
+
+    /* Make the size header row sticky to the top of the viewport */
+    .sizes-row th {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: #f0f0ff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
     .section-title {
@@ -182,6 +199,9 @@
         width: 100%;
         max-width: none;
       }
+      table {
+        min-width: 0;
+      }
     }
   </style>
 </head>
@@ -206,10 +226,11 @@
 
 <script>
 const products = [
-  { name: "Kids Short Sleeve", neck: "Round", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 19.5, promo: 15.5 },
-  { name: "Kids Short Sleeve", neck: "Collar", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 25.5, promo: 20.5 },
-  { name: "Kids Long Sleeve", neck: "Round", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 21.5, promo: 18.5 },
-  { name: "Kids Long Sleeve", neck: "Collar", sizes: ["1~2","3~4","5~6","7~8","9~10","11~12","13~14"], normal: 31.5, promo: 23.5 },
+  // Kids: sizes changed to same format as adults (XS..3XL). Prices remain scalar and will apply to each kid size.
+  { name: "Kids Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 19.5, promo: 15.5 },
+  { name: "Kids Short Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 25.5, promo: 20.5 },
+  { name: "Kids Long Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 21.5, promo: 18.5 },
+  { name: "Kids Long Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 31.5, promo: 23.5 },
 
   // Adult Short Sleeve - Round
   { name: "Adult Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
@@ -252,9 +273,12 @@ products.forEach((product, idx) => {
   labelDiv.className = "product-label";
   labelDiv.innerHTML = `${idx + 1}. ${product.name} <small>Neck: ${product.neck}</small>`;
 
+  const tableWrap = document.createElement("div");
+  tableWrap.className = "table-wrap";
+
   const table = document.createElement("table");
-  // build table without the top spanning section title
-  let html = `<tr><th>SIZE</th>`;
+  // build table with a sizes header row (made sticky via CSS)
+  let html = `<tr class="sizes-row"><th>SIZE</th>`;
   product.sizes.forEach(size => html += `<th>${size}</th>`);
   html += `<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr>`;
 
@@ -284,8 +308,9 @@ products.forEach((product, idx) => {
 
   table.innerHTML = html;
 
+  tableWrap.appendChild(table);
   wrapper.appendChild(labelDiv);
-  wrapper.appendChild(table);
+  wrapper.appendChild(tableWrap);
   tablesContainer.appendChild(wrapper);
 });
 
