@@ -1,413 +1,209 @@
-<!DOCTYPE html>
+<!--
+Updated Jersey sizing table
+- All product rows included (kids + adult, short/long, R/C, muslimah)
+- Size columns from 2XS up to 11XL (inclusive)
+- Single size header row that's sticky at the top when scrolling vertically
+- Product name column is sticky on the left so you can scroll sizes horizontally
+- Lightweight JS included to demonstrate row highlighting on hover and to toggle sticky header on/off
+
+Save this file and open in a browser to preview.
+-->
+
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jersey Sublimation Price (Daily)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jersey Sizing — Sticky Size Header (2XS → 11XL)</title>
   <style>
-    :root {
-      --primary: #4400ff;
-      --light-bg: #f9f9fc;
-      --border-color: #ddd;
-      --accent: #ff6b6b;
-      --text-dark: #333;
-      --text-light: #666;
-      --oversize-bg: #ffe5e5;
-      --oversize-text: #a80000;
+    :root{
+      --header-height:48px;
+      --left-col-width:260px;
+    }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    .wrap{height:90vh;padding:12px;box-sizing:border-box;background:#f7f8fa}
+
+    .controls{margin-bottom:8px}
+    .controls button{padding:6px 10px;border-radius:6px;border:1px solid #ccc;background:white;cursor:pointer}
+
+    .table-wrap{
+      width:100%;height:calc(100% - 56px); /* leave space for controls */
+      overflow:auto;
+      border:1px solid #e0e4e8;
+      background:white;
+      border-radius:6px;
     }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--light-bg);
-      color: var(--text-dark);
-      margin: 0;
-      padding: 30px;
+    table{
+      border-collapse:collapse;
+      width:100%;min-width:1200px; /* allow horizontal scroll if viewport small */
+      table-layout:fixed; /* equal column widths for consistency */
     }
 
-    h1, h2 {
-      color: var(--primary);
+    thead th{
+      position:sticky; /* sticky header row */
+      top:0; /* stick to top of .table-wrap */
+      background:#ffffff;
+      z-index:4;
+      height:var(--header-height);
+      line-height:var(--header-height);
+      text-align:center;
+      border-bottom:2px solid #e6eef6;
+      padding:0 8px;
+      font-weight:600;
+      white-space:nowrap;
     }
 
-    .branding {
-      font-size: 1.4em;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: var(--primary);
+    /* Make the first column (product name) sticky to the left */
+    th:first-child, td:first-child{
+      position:sticky;
+      left:0;
+      z-index:5; /* above the rest of the table cells */
+      background:#fbfdff;
+      border-right:1px solid #e6eef6;
+      text-align:left;
+      padding:8px 12px;
+      min-width:var(--left-col-width);
+      max-width:var(--left-col-width);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .button-container {
-      margin-bottom: 20px;
+    tbody td{
+      padding:8px 10px;text-align:center;border-bottom:1px solid #f0f4f8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
     }
 
-    .button-container button {
-      background-color: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      font-size: 0.95em;
-      margin-right: 10px;
+    tbody tr:hover td{background:#fbfdff}
+
+    /* make size columns narrower so more can fit */
+    .size-col{width:84px}
+
+    /* small screens: allow horizontal scroll and smaller left col */
+    @media (max-width:900px){
+      :root{--left-col-width:180px}
+      table{min-width:1600px}
     }
 
-    .button-container button:hover {
-      background-color: #3300cc;
-    }
-
-    /* New layout: product wrapper with side label + table */
-    .product-wrapper {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 20px;
-      align-items: flex-start;
-    }
-
-    .product-label {
-      min-width: 220px;
-      max-width: 260px;
-      background: #fff;
-      padding: 14px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      border: 1px solid var(--border-color);
-      text-align: left;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 1em;
-      line-height: 1.3;
-    }
-
-    .product-label small {
-      display: block;
-      color: var(--text-light);
-      font-weight: 600;
-      margin-top: 6px;
-      font-size: 0.9em;
-    }
-
-    /* table */
-    .table-wrap {
-      width: 100%;
-      overflow: auto;
-      border-radius: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 0;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      min-width: 640px; /* ensure horizontal scroll if many sizes */
-    }
-
-    th, td {
-      border: 1px solid var(--border-color);
-      padding: 10px;
-      text-align: center;
-      font-size: 0.92em;
-      background-clip: padding-box;
-    }
-
-    th {
-      background-color: #f0f0ff;
-      color: var(--text-dark);
-    }
-
-    /* Make the size header row sticky to the top of the viewport */
-    .sizes-row th {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      background: #f0f0ff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-    }
-
-    .section-title {
-      background: var(--primary);
-      color: #fff;
-      font-size: 1.1em;
-      padding: 12px 0;
-    }
-
-    input[type="number"] {
-      width: 70px;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 0.9em;
-    }
-
-    .oversized {
-      background-color: var(--oversize-bg);
-      color: var(--oversize-text);
-      font-weight: bold;
-    }
-
-    .grand-totals {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .grand-totals table {
-      margin-top: 10px;
-    }
-
-    .grand-totals p {
-      font-size: 1em;
-      color: var(--text-dark);
-    }
-
-    .grand-totals span {
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      .printable, .printable * {
-        visibility: visible;
-      }
-      .printable {
-        position: absolute;
-        left: 0;
-        top: 0;
-      }
-
-      /* ensure labels & tables print nicely */
-      .product-wrapper {
-        display: block !important;
-      }
-      .product-label {
-        margin-bottom: 8px;
-      }
-    }
-
-    /* responsive: stack label on small screens */
-    @media (max-width: 800px) {
-      .product-wrapper {
-        flex-direction: column;
-      }
-      .product-label {
-        width: 100%;
-        max-width: none;
-      }
-      table {
-        min-width: 0;
-      }
-    }
+    /* visual helpers */
+    .note{font-size:13px;color:#556; margin-top:8px}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="controls">
+      <button id="toggleSticky">Toggle sticky header</button>
+      <span style="margin-left:12px;color:#444;font-size:14px">Size columns: 2XS, XS, S, M, L, XL, 2XL → 11XL (single sticky header)</span>
+    </div>
 
-<div class="branding">Inspirazs Sdn. Bhd.</div>
-<h1 class="no-print">Jersey Sublimation Price (Daily)</h1>
+    <div class="table-wrap" id="tableWrap">
+      <table id="sizesTable" aria-label="Jersey sizes table">
+        <thead>
+          <tr>
+            <th>Product Description</th>
+            <!-- Size header row — single 'head of sizing' that will be sticky -->
+            <th class="size-col">2XS</th>
+            <th class="size-col">XS</th>
+            <th class="size-col">S</th>
+            <th class="size-col">M</th>
+            <th class="size-col">L</th>
+            <th class="size-col">XL</th>
+            <th class="size-col">2XL</th>
+            <th class="size-col">3XL</th>
+            <th class="size-col">4XL</th>
+            <th class="size-col">5XL</th>
+            <th class="size-col">6XL</th>
+            <th class="size-col">7XL</th>
+            <th class="size-col">8XL</th>
+            <th class="size-col">9XL</th>
+            <th class="size-col">10XL</th>
+            <th class="size-col">11XL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- The 10 product types you listed previously. All rows share the same size header above. -->
+          <tr><td>KIDS SHORT SLEEVE - R</td>"
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-<div class="button-container no-print">
-  <button onclick="window.print()">Print Page</button>
-  <button onclick="exportCSV()">Export CSV</button>
-</div>
+    <p class="note">Notes: Product column is sticky on the left. The size header row is sticky at the top so as you scroll vertically the single 'head of sizing' remains visible. Horizontally scroll to see wider sizes.</p>
+  </div>
 
-<div id="tables"></div>
+  <script>
+    // Build the product rows dynamically so it's easier to maintain and add rows up to 11XL
+    (function(){
+      const products = [
+        'KIDS SHORT SLEEVE - R',
+        'KIDS SHORT SLEEVE - C',
+        'KIDS LONG SLEEVE - R',
+        'KIDS LONG SLEEVE - C',
+        'ADULT SHORT SLEEVE - R',
+        'ADULT SHORT SLEEVE - C',
+        'ADULT LONG SLEEVE - R',
+        'ADULT LONG SLEEVE - C',
+        'ADULT MUSLIMAH - R',
+        'ADULT MUSLIMAH - C'
+      ];
 
-<div class="grand-totals printable">
-  <h2>Order Summary</h2>
-  <div id="print-summary"></div>
-  <p><strong>Total Normal Price:</strong> RM <span id="grand-normal">0.00</span></p>
-  <p><strong>Total Promotion Price:</strong> RM <span id="grand-promo">0.00</span></p>
-</div>
+      const sizes = ['2XS','XS','S','M','L','XL','2XL','3XL','4XL','5XL','6XL','7XL','8XL','9XL','10XL','11XL'];
+      const tbody = document.querySelector('#sizesTable tbody');
 
-<script>
-const products = [
-  // Kids: sizes changed to same format as adults (XS..3XL). Prices remain scalar and will apply to each kid size.
-  { name: "Kids Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 19.5, promo: 15.5 },
-  { name: "Kids Short Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 25.5, promo: 20.5 },
-  { name: "Kids Long Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 21.5, promo: 18.5 },
-  { name: "Kids Long Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL"], normal: 31.5, promo: 23.5 },
+      // clear any placeholder rows and render full table
+      tbody.innerHTML = '';
 
-  // Adult Short Sleeve - Round
-  { name: "Adult Short Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
-    normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5],
-    promo:  [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5]
-  },
+      products.forEach(p => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        tdName.textContent = p;
+        tr.appendChild(tdName);
 
-  // Adult Short Sleeve - Collar
-  { name: "Adult Short Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
-    normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5],
-    promo:  [20.5,20.5,20.5,20.5,20.5,20.5,20.5,24.5,27.5,29.5,31.5,33.5]
-  },
+        // create size columns with numeric inputs (example) — adapt as you need
+        sizes.forEach(sz => {
+          const td = document.createElement('td');
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.min = 0;
+          input.placeholder = '-';
+          input.style.width = '60px';
+          input.style.boxSizing = 'border-box';
+          input.style.padding = '4px';
+          input.dataset.size = sz;
+          td.appendChild(input);
+          tr.appendChild(td);
+        });
 
-  // Adult Long Sleeve - Round
-  { name: "Adult Long Sleeve", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
-    normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5],
-    promo:  [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5]
-  },
+        tbody.appendChild(tr);
+      });
 
-  // Adult Long Sleeve - Collar
-  { name: "Adult Long Sleeve", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"],
-    normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5],
-    promo:  [23.5,23.5,23.5,23.5,23.5,23.5,23.5,27.5,30.5,32.5,34.5,36.5]
-  },
+      // small enhancement: clicking a size header highlights that size column
+      document.querySelectorAll('thead th.size-col').forEach((h, idx) => {
+        h.style.cursor = 'pointer';
+        h.addEventListener('click', () => {
+          // idx corresponds to size column index (0-based across the size columns)
+          const colIndex = idx + 1; // +1 because first column is product name
+          // toggle highlight class
+          document.querySelectorAll('tbody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            cells.forEach((c, i) => {
+              if(i === colIndex) c.style.background = '#fff6d9'; else c.style.background = '';
+            });
+          });
+        });
+      });
 
-  { name: "Adult Muslimah", neck: "Round", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: 28, promo: 28 },
-  { name: "Adult Muslimah", neck: "Collar", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL"], normal: 33, promo: 33 },
-];
+      // toggle sticky header (useful for debugging in some browsers)
+      const toggleBtn = document.getElementById('toggleSticky');
+      toggleBtn.addEventListener('click', ()=>{
+        const theadTh = document.querySelectorAll('thead th');
+        theadTh.forEach(th => {
+          if(getComputedStyle(th).position === 'sticky') th.style.position = 'static';
+          else th.style.position = 'sticky';
+        });
+      });
 
-const tablesContainer = document.getElementById("tables");
-
-products.forEach((product, idx) => {
-  const sizeLen = product.sizes.length;
-
-  // wrapper that holds the side label and the table
-  const wrapper = document.createElement("div");
-  wrapper.className = "product-wrapper";
-
-  const labelDiv = document.createElement("div");
-  labelDiv.className = "product-label";
-  labelDiv.innerHTML = `${idx + 1}. ${product.name} <small>Neck: ${product.neck}</small>`;
-
-  const tableWrap = document.createElement("div");
-  tableWrap.className = "table-wrap";
-
-  const table = document.createElement("table");
-  // build table with a sizes header row (made sticky via CSS)
-  let html = `<tr class="sizes-row"><th>SIZE</th>`;
-  product.sizes.forEach(size => html += `<th>${size}</th>`);
-  html += `<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr>`;
-
-  html += `<tr><td>QTY</td>`;
-  for (let i = 0; i < sizeLen; i++) {
-    html += `<td><input type="number" min="0" value="0" class="qty input-qty" data-idx="${idx}" data-size="${i}"></td>`;
-  }
-  html += `<td class="total-qty" data-idx="${idx}">0</td><td class="total-sales-normal" data-idx="${idx}">0.00</td><td class="total-sales-promo" data-idx="${idx}">0.00</td></tr>`;
-
-  // Add Normal Price Row
-  html += `<tr><td><strong>Normal RM</strong></td>`;
-  for (let i = 0; i < sizeLen; i++) {
-    const normal = Array.isArray(product.normal) ? product.normal[i] : product.normal;
-    const isOversized = ["4XL","5XL","6XL","7XL","8XL"].includes(product.sizes[i]);
-    html += `<td${isOversized ? ' class="oversized"' : ''}>${normal.toFixed(2)}</td>`;
-  }
-  html += `<td colspan="3"></td></tr>`;
-
-  // Add Promo Price Row
-  html += `<tr><td><strong>Promo RM</strong></td>`;
-  for (let i = 0; i < sizeLen; i++) {
-    const promo = Array.isArray(product.promo) ? product.promo[i] : product.promo;
-    const isOversized = ["4XL","5XL","6XL","7XL","8XL"].includes(product.sizes[i]);
-    html += `<td${isOversized ? ' class="oversized"' : ''}>${promo.toFixed(2)}</td>`;
-  }
-  html += `<td colspan="3"></td></tr>`;
-
-  table.innerHTML = html;
-
-  tableWrap.appendChild(table);
-  wrapper.appendChild(labelDiv);
-  wrapper.appendChild(tableWrap);
-  tablesContainer.appendChild(wrapper);
-});
-
-function updateTotals() {
-  const qtyInputs = document.querySelectorAll(".qty");
-  const totals = {};
-  let grandNormal = 0;
-  let grandPromo = 0;
-
-  qtyInputs.forEach(input => {
-    const idx = input.dataset.idx;
-    const size = input.dataset.size;
-    const qty = parseInt(input.value) || 0;
-    if (qty === 0) return;
-
-    const product = products[idx];
-    const norm = Array.isArray(product.normal) ? product.normal[size] : product.normal;
-    const promo = Array.isArray(product.promo) ? product.promo[size] : product.promo;
-
-    const normTotal = qty * norm;
-    const promoTotal = qty * promo;
-
-    totals[idx] = totals[idx] || { name: `${product.name} (${product.neck})`, qty: 0, normal: 0, promo: 0 };
-    totals[idx].qty += qty;
-    totals[idx].normal += normTotal;
-    totals[idx].promo += promoTotal;
-
-    grandNormal += normTotal;
-    grandPromo += promoTotal;
-  });
-
-  // Update per-product table totals (or zero them)
-  for (let i = 0; i < products.length; i++) {
-    const tdQty = document.querySelector(`.total-qty[data-idx="${i}"]`);
-    const tdNormal = document.querySelector(`.total-sales-normal[data-idx="${i}"]`);
-    const tdPromo = document.querySelector(`.total-sales-promo[data-idx="${i}"]`);
-    if (totals[i]) {
-      if (tdQty) tdQty.textContent = totals[i].qty;
-      if (tdNormal) tdNormal.textContent = totals[i].normal.toFixed(2);
-      if (tdPromo) tdPromo.textContent = totals[i].promo.toFixed(2);
-    } else {
-      if (tdQty) tdQty.textContent = '0';
-      if (tdNormal) tdNormal.textContent = '0.00';
-      if (tdPromo) tdPromo.textContent = '0.00';
-    }
-  }
-
-  let summaryHTML = '<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>';
-  Object.entries(totals).forEach(([idx, data]) => {
-    summaryHTML += `<tr><td>${data.name}</td><td>${data.qty}</td><td>${data.normal.toFixed(2)}</td><td>${data.promo.toFixed(2)}</td></tr>`;
-  });
-  summaryHTML += '</table>';
-
-  document.getElementById("print-summary").innerHTML = summaryHTML;
-  document.getElementById("grand-normal").textContent = grandNormal.toFixed(2);
-  document.getElementById("grand-promo").textContent = grandPromo.toFixed(2);
-}
-
-function exportCSV() {
-  const rows = [["Item", "Qty", "Normal (RM)", "Promo (RM)"]];
-  const qtyInputs = document.querySelectorAll(".qty");
-  const totals = {};
-
-  qtyInputs.forEach(input => {
-    const idx = input.dataset.idx;
-    const size = input.dataset.size;
-    const qty = parseInt(input.value) || 0;
-    if (qty === 0) return;
-
-    const product = products[idx];
-    const norm = Array.isArray(product.normal) ? product.normal[size] : product.normal;
-    const promo = Array.isArray(product.promo) ? product.promo[size] : product.promo;
-
-    const normTotal = qty * norm;
-    const promoTotal = qty * promo;
-
-    totals[idx] = totals[idx] || { name: `${product.name} (${product.neck})`, qty: 0, normal: 0, promo: 0 };
-    totals[idx].qty += qty;
-    totals[idx].normal += normTotal;
-    totals[idx].promo += promoTotal;
-  });
-
-  Object.values(totals).forEach(data => {
-    rows.push([data.name, data.qty, data.normal.toFixed(2), data.promo.toFixed(2)]);
-  });
-
-  const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
-  const link = document.createElement("a");
-  link.setAttribute("href", encodeURI(csvContent));
-  link.setAttribute("download", "jersey_price_summary.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-setInterval(updateTotals, 300);
-</script>
-
+    })();
+  </script>
 </body>
 </html>
