@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Jersey Sublimation Price (Daily) — Rotated (Sizes left)</title>
+<title>Jersey Sublimation Price (Daily) — Rotated (Sizes left) with Original Prices</title>
 <style>
   :root{
     --primary:#4400ff;
@@ -11,7 +11,7 @@
     --border:#ddd;
     --accent:#ff6b6b;
     --text:#111827;
-    --oversize-bg:#ffe5e5;
+    --oversize-bg:#fff2f2;
     --oversize-text:#a80000;
   }
   body{
@@ -36,13 +36,13 @@
     background:#fff;
     border:1px solid var(--border);
     overflow:auto; /* important */
-    max-height:650px;
+    max-height:700px;
   }
 
   table.sizing-table{
     border-collapse:collapse;
     width:max-content;       /* allow horizontal scrolling */
-    min-width:1000px;
+    min-width:1100px;
   }
   table.sizing-table th, table.sizing-table td{
     border:1px solid var(--border);
@@ -61,7 +61,12 @@
     z-index:40;
     font-weight:700;
     padding:10px 12px;
+    vertical-align:bottom;
   }
+
+  /* show small price under product name */
+  .product-title { display:block; font-weight:700; font-size:0.95rem; }
+  .product-price { display:block; font-size:0.85rem; color: #334155; margin-top:6px; }
 
   /* LEFT size column sticky */
   td.size-col, th.size-col {
@@ -75,7 +80,7 @@
     min-width:120px;
   }
 
-  /* top-left corner cell (empty) must be above both */
+  /* top-left corner cell (empty label) must be above both */
   th.corner {
     position: sticky;
     top: 0;
@@ -146,45 +151,26 @@
   <div class="grand">
     <h3 style="margin:0 0 8px 0;">Order Summary</h3>
     <div id="print-summary"></div>
-    <p>Total Normal: RM <span id="grand-normal">0.00</span></p>
-    <p>Total Promo: RM <span id="grand-promo">0.00</span></p>
+    <p>Total Original (RM): <span id="grand-normal">0.00</span></p>
   </div>
 </div>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const headers = document.querySelectorAll("thead tr th:not(.size-col)");
-    headers.forEach((th, index) => {
-        const original = th.innerText.trim();
-        th.innerText = `${index + 1}. ${original}`;
-    });
-});
-</script>
-<script>
-/* ADULT PRODUCTS (no kids) */
+/* Products & prices you provided (original price = normal). No kids. */
 const products = [
-  // For adult product prices: some use arrays (per-size) from your previous data; fallback uses last value
-  { key: "ADULT SHORT SLEEVE - R", normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5,33.5,35.5,37.5], promo: [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5,29.5,31.5,33.5] },
-  { key: "ADULT SHORT SLEEVE - C", normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5,39.5,41.5,43.5], promo: [20.5,20.5,20.5,20.5,20.5,20.5,20.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5] },
-  { key: "ADULT LONG SLEEVE - R", normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5], promo: [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5,32.5,34.5,36.5] },
-  { key: "ADULT LONG SLEEVE - C", normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5,45.5,47.5,49.5], promo: [23.5,23.5,23.5,23.5,23.5,23.5,23.5,27.5,30.5,32.5,34.5,36.5,38.5,40.5,42.5] },
-  { key: "ADULT MUSLIMAH - R", normal: 28.0, promo: 28.0 },
-  { key: "ADULT MUSLIMAH - C", normal: 33.0, promo: 33.0 }
+  { key: "ADULT SHORT SLEEVE - R", normal: 22.5 },
+  { key: "ADULT SHORT SLEEVE - C", normal: 28.5 },
+  { key: "ADULT LONG SLEEVE - R", normal: 24.5 },
+  { key: "ADULT LONG SLEEVE - C", normal: 34.5 },
+  { key: "ADULT MUSLIMAH - R", normal: 28.0 },
+  { key: "ADULT MUSLIMAH - C", normal: 33.0 },
+  // If you have more products, add here; numbering is auto.
 ];
 
 /* adult sizes XS -> 11XL */
 const sizes = ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"];
 
-/* helper to get price (handle scalar or array) */
-function getPrice(product, idx, type){
-  const v = product[type];
-  if(Array.isArray(v)){
-    if(idx < v.length) return Number(v[idx]);
-    return Number(v[v.length - 1]);
-  }
-  return Number(v);
-}
-
-/* build thead */
+/* build table with products across top and sizes down left */
 function buildTable(){
   const thead = document.getElementById("thead");
   const tbody = document.getElementById("tbody");
@@ -193,114 +179,105 @@ function buildTable(){
   tbody.innerHTML = "";
   tfoot.innerHTML = "";
 
-  // thead: corner + product headers
-  let th = "<tr>";
-  th += `<th class="corner size-col">Size</th>`; // top-left corner sticky
-  products.forEach((p, pi) => {
-    th += `<th class="product-top" data-pidx="${pi}">${p.key}</th>`;
+  // thead: corner + product headers (auto-numbered)
+  let head = "<tr>";
+  head += `<th class="corner size-col">Size</th>`;
+  products.forEach((p, i) => {
+    // header shows auto-number + product name + price below
+    head += `<th class="product-top" data-pidx="${i}">
+               <span class="product-title">${i+1}. ${p.key}</span>
+               <span class="product-price">RM ${Number(p.normal).toFixed(2)}</span>
+             </th>`;
   });
-  th += "</tr>";
-  thead.innerHTML = th;
+  head += "</tr>";
+  thead.innerHTML = head;
 
   // tbody: sizes as rows
   sizes.forEach((sz, si) => {
-    let r = `<tr data-size="${si}">`;
-    r += `<td class="size-col">${sz}</td>`;
+    let row = `<tr data-size="${si}">`;
+    row += `<td class="size-col">${sz}</td>`;
     products.forEach((p, pi) => {
-      r += `<td><input class="qty" type="number" min="0" value="0" data-pidx="${pi}" data-sidx="${si}" aria-label="${p.key} ${sz} qty"></td>`;
+      // mark oversized columns visually for 4XL+
+      const isOversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(sz);
+      row += `<td${isOversize ? ' class="oversized"' : ''}><input class="qty" type="number" min="0" value="0" data-pidx="${pi}" data-sidx="${si}" aria-label="${p.key} ${sz} qty"></td>`;
     });
-    r += `</tr>`;
-    tbody.insertAdjacentHTML('beforeend', r);
+    row += `</tr>`;
+    tbody.insertAdjacentHTML('beforeend', row);
   });
 
-  // tfoot: totals rows per product (Qty, Normal RM, Promo RM)
-  // first column labels are sticky (size-col)
+  // tfoot: totals (per product) - Qty and Original Amount
   let footQty = `<tr class="totals-row"><th class="size-col">Total QTY</th>`;
-  let footNormal = `<tr class="totals-row"><th class="size-col">Total Normal (RM)</th>`;
-  let footPromo = `<tr class="totals-row"><th class="size-col">Total Promo (RM)</th>`;
-  products.forEach((p,pi)=>{
+  let footOrig = `<tr class="totals-row"><th class="size-col">Total Original (RM)</th>`;
+  products.forEach((p, pi) => {
     footQty += `<td class="col-total-qty" data-pidx="${pi}">0</td>`;
-    footNormal += `<td class="col-total-normal" data-pidx="${pi}">0.00</td>`;
-    footPromo += `<td class="col-total-promo" data-pidx="${pi}">0.00</td>`;
+    footOrig += `<td class="col-total-orig" data-pidx="${pi}">0.00</td>`;
   });
-  footQty += `</tr>`; footNormal += `</tr>`; footPromo += `</tr>`;
+  footQty += `</tr>`;
+  footOrig += `</tr>`;
   tfoot.insertAdjacentHTML('beforeend', footQty);
-  tfoot.insertAdjacentHTML('beforeend', footNormal);
-  tfoot.insertAdjacentHTML('beforeend', footPromo);
+  tfoot.insertAdjacentHTML('beforeend', footOrig);
 }
 
-/* calculate totals per product (column) & grand totals */
+/* compute totals */
 function updateTotals(){
-  const qtyInputs = document.querySelectorAll("input.qty");
-  // init
-  const totals = products.map(()=>({qty:0, normal:0, promo:0}));
-  let grandNormal = 0, grandPromo = 0;
+  const qtys = document.querySelectorAll("input.qty");
+  const totals = products.map(()=>({qty:0, orig:0}));
+  let grandOrig = 0;
 
-  qtyInputs.forEach(inp=>{
+  qtys.forEach(inp=>{
     const p = Number(inp.dataset.pidx);
     const s = Number(inp.dataset.sidx);
-    const qty = Math.max(0, parseInt(inp.value)||0);
+    const qty = Math.max(0, parseInt(inp.value) || 0);
     if(qty <= 0) return;
-    const norm = getPrice(products[p], s, 'normal');
-    const promo = getPrice(products[p], s, 'promo');
+    const price = Number(products[p].normal);
     totals[p].qty += qty;
-    totals[p].normal += qty * norm;
-    totals[p].promo += qty * promo;
-    grandNormal += qty * norm;
-    grandPromo += qty * promo;
+    totals[p].orig += qty * price;
+    grandOrig += qty * price;
   });
 
-  // write totals to footer
   totals.forEach((t, i) => {
     const tdQ = document.querySelector(`.col-total-qty[data-pidx="${i}"]`);
-    const tdN = document.querySelector(`.col-total-normal[data-pidx="${i}"]`);
-    const tdP = document.querySelector(`.col-total-promo[data-pidx="${i}"]`);
+    const tdO = document.querySelector(`.col-total-orig[data-pidx="${i}"]`);
     if(tdQ) tdQ.textContent = t.qty;
-    if(tdN) tdN.textContent = t.normal.toFixed(2);
-    if(tdP) tdP.textContent = t.promo.toFixed(2);
+    if(tdO) tdO.textContent = t.orig.toFixed(2);
   });
 
-  // update summary
-  const summaryRows = [];
+  // summary table
+  let summary = "<table style='border-collapse:collapse;width:100%'><tr style='background:#f0f0ff'><th style='text-align:left;padding:6px;border:1px solid var(--border)'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Original (RM)</th></tr>";
   totals.forEach((t,i)=>{
-    if(t.qty>0) summaryRows.push([products[i].key, t.qty, t.normal.toFixed(2), t.promo.toFixed(2)]);
+    if(t.qty > 0) summary += `<tr><td style='padding:6px;border:1px solid var(--border)'>${i+1}. ${products[i].key}</td><td style='padding:6px;border:1px solid var(--border)'>${t.qty}</td><td style='padding:6px;border:1px solid var(--border)'>${t.orig.toFixed(2)}</td></tr>`;
   });
-  let html = "<table style='border-collapse:collapse;width:100%'><tr style='background:#f0f0ff'><th style='text-align:left;padding:6px;border:1px solid var(--border)'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Normal (RM)</th><th style='padding:6px;border:1px solid var(--border)'>Promo (RM)</th></tr>";
-  summaryRows.forEach(r=> html += `<tr><td style='padding:6px;border:1px solid var(--border)'>${r[0]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[1]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[2]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[3]}</td></tr>`);
-  html += "</table>";
-  document.getElementById("print-summary").innerHTML = html;
-  document.getElementById("grand-normal").textContent = grandNormal.toFixed(2);
-  document.getElementById("grand-promo").textContent = grandPromo.toFixed(2);
+  summary += "</table>";
+  document.getElementById("print-summary").innerHTML = summary;
+  document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
 }
 
 /* CSV export per product totals */
 function exportCSV(){
-  // ensure totals updated
   updateTotals();
-  const rows = [["Item","Qty","Normal (RM)","Promo (RM)"]];
+  const rows = [["Item","Qty","Original (RM)"]];
   const qtyCells = document.querySelectorAll(".col-total-qty");
   qtyCells.forEach(td=>{
     const p = Number(td.dataset.pidx);
-    const qty = Number(td.textContent)||0;
+    const qty = Number(td.textContent) || 0;
     if(qty === 0) return;
-    const norm = document.querySelector(`.col-total-normal[data-pidx="${p}"]`).textContent;
-    const promo = document.querySelector(`.col-total-promo[data-pidx="${p}"]`).textContent;
-    rows.push([products[p].key, qty, norm, promo]);
+    const orig = document.querySelector(`.col-total-orig[data-pidx="${p}"]`).textContent;
+    rows.push([`${p+1}. ${products[p].key}`, qty, orig]);
   });
-  if(rows.length===1){ alert("No quantities entered."); return; }
+  if(rows.length === 1){ alert("No quantities entered."); return; }
   const csv = "data:text/csv;charset=utf-8," + rows.map(r=> r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
   const link = document.createElement("a");
   link.href = encodeURI(csv);
-  link.download = "jersey_summary.csv";
+  link.download = "jersey_original_summary.csv";
   document.body.appendChild(link);
   link.click();
   link.remove();
 }
 
-/* initial build */
+/* init */
 buildTable();
 
-/* live update via delegation for performance */
+/* update live (event delegation) */
 document.getElementById("grid-wrap").addEventListener("input", (e)=>{
   if(e.target && e.target.matches("input.qty")){
     if(e.target.value === "" || Number(e.target.value) < 0) e.target.value = 0;
@@ -311,7 +288,6 @@ document.getElementById("grid-wrap").addEventListener("input", (e)=>{
 /* initial totals */
 updateTotals();
 </script>
+
 </body>
 </html>
-
-
