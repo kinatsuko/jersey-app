@@ -1,297 +1,307 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jersey Sublimation Price (Daily)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Jersey Sublimation Price (Daily) — Rotated (Sizes left)</title>
 <style>
-:root {
-    --primary: #4400ff;
-    --light-bg: #f9f9fc;
-    --border-color: #ddd;
-    --accent: #ff6b6b;
-    --text-dark: #333;
-    --text-light: #666;
-    --oversize-bg: #ffe5e5;
-    --oversize-text: #a80000;
-}
+  :root{
+    --primary:#4400ff;
+    --bg:#f9f9fc;
+    --border:#ddd;
+    --accent:#ff6b6b;
+    --text:#111827;
+    --oversize-bg:#ffe5e5;
+    --oversize-text:#a80000;
+  }
+  body{
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    margin:20px;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .branding{ color:var(--primary); font-weight:700; margin-bottom:8px; }
+  h1{ margin:0 0 12px 0; color:var(--primary); font-size:1.2rem; }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--light-bg);
-    color: var(--text-dark);
-    margin: 0;
-    padding: 20px;
-}
+  .controls{ margin:8px 0 14px 0; }
+  .controls button{
+    background:var(--primary); color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-right:8px;
+  }
+  .controls button.secondary{ background:#fff; color:var(--primary); border:1px solid var(--border); }
 
-h1, h2 {
-    color: var(--primary);
-}
+  /* wrapper that scrolls both axes */
+  .sizing-wrapper{
+    width:100%;
+    border-radius:10px;
+    background:#fff;
+    border:1px solid var(--border);
+    overflow:auto; /* important */
+    max-height:650px;
+  }
 
-.branding {
-    font-size: 1.4em;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--primary);
-}
+  table.sizing-table{
+    border-collapse:collapse;
+    width:max-content;       /* allow horizontal scrolling */
+    min-width:1000px;
+  }
+  table.sizing-table th, table.sizing-table td{
+    border:1px solid var(--border);
+    padding:8px 10px;
+    white-space:nowrap;
+    text-align:center;
+    font-size:0.95rem;
+    background-clip: padding-box;
+  }
 
-.button-container {
-    margin-bottom: 20px;
-}
-
-.button-container button {
-    background-color: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.button-container button:hover {
-    background-color: #3300cc;
-}
-
-.sizing-wrapper {
-    width: 100%;
-    overflow: auto;  /* horizontal & vertical scroll */
-    max-height: 600px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: #fff;
-}
-
-.sizing-table {
-    border-collapse: collapse;
-    min-width: 1500px;
-}
-
-.sizing-table th,
-.sizing-table td {
-    border: 1px solid var(--border-color);
-    padding: 8px 12px;
-    white-space: nowrap;
-    text-align: center;
-}
-
-/* Sticky top header */
-.sizing-table thead th {
+  /* TOP product headers sticky (stick on vertical scroll) */
+  th.product-top{
     position: sticky;
     top: 0;
-    background: #f0f0ff;
-    z-index: 30;
-}
+    background:#f0f0ff;
+    z-index:40;
+    font-weight:700;
+    padding:10px 12px;
+  }
 
-/* Sticky first column (Product + Neck) */
-.sticky-col {
+  /* LEFT size column sticky */
+  td.size-col, th.size-col {
     position: sticky;
     left: 0;
-    min-width: 200px;
-    background: #f8f1d3;
-    font-weight: 700;
-    border-right: 3px solid #c49b26;
-    text-align: left;
-    padding-left: 8px;
-    z-index: 25;
-}
+    background:#e8f8ff;
+    z-index:45;
+    font-weight:700;
+    text-align:left;
+    padding-left:12px;
+    min-width:120px;
+  }
 
-/* Oversized sizes styling */
-.oversized {
-    background-color: var(--oversize-bg);
-    color: var(--oversize-text);
-    font-weight: bold;
-}
+  /* top-left corner cell (empty) must be above both */
+  th.corner {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index:50;
+    background:#f0f0ff;
+    text-align:left;
+    padding-left:12px;
+    min-width:120px;
+  }
 
-input[type="number"] {
-    width: 60px;
-    padding: 5px;
-    border-radius: 5px;
-    text-align: center;
-}
+  /* oversize highlight */
+  td.oversized { background:var(--oversize-bg); color:var(--oversize-text); font-weight:700; }
 
-.grand-totals {
-    margin-top: 20px;
-    padding: 15px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
+  input.qty {
+    width:68px;
+    padding:5px;
+    border-radius:6px;
+    border:1px solid #cfcfcf;
+    text-align:center;
+  }
 
-.grand-totals table {
-    width: 100%;
-    border-collapse: collapse;
-}
+  .totals-row th, .totals-row td { background:#fff7f7; font-weight:700; }
 
-.grand-totals th,
-.grand-totals td {
-    border: 1px solid var(--border-color);
-    padding: 6px 10px;
-    text-align: center;
-}
-
-@media print {
-    body * { visibility: hidden; }
-    .printable, .printable * { visibility: visible; }
-    .printable { position: absolute; left:0; top:0; }
-}
+  .summary{
+    display:flex;
+    gap:16px;
+    margin-top:12px;
+    align-items:flex-start;
+  }
+  .grand {
+    background:#fff; padding:12px; border-radius:8px; box-shadow:0 3px 10px rgba(10,10,20,0.03); border:1px solid var(--border);
+  }
+  .grand p{ margin:6px 0; font-weight:600; }
+  @media print {
+    body *{ visibility:hidden; }
+    .printable, .printable *{ visibility:visible; }
+    .printable{ position:absolute; left:0; top:0; width:100% }
+    .sizing-wrapper{ max-height:none; overflow:visible; }
+  }
 </style>
 </head>
 <body>
 
 <div class="branding">Inspirazs Sdn. Bhd.</div>
-<h1 class="no-print">Jersey Sublimation Price (Daily)</h1>
+<h1>Jersey Sublimation Price (Daily)</h1>
 
-<div class="button-container no-print">
-    <button onclick="window.print()">Print Page</button>
-    <button onclick="exportCSV()">Export CSV</button>
+<div class="controls no-print">
+  <button onclick="window.print()">Print</button>
+  <button class="secondary" onclick="exportCSV()">Export CSV</button>
 </div>
 
-<div class="sizing-wrapper" id="tables"></div>
+<div class="sizing-wrapper printable" id="grid-wrap">
+  <table class="sizing-table" id="sizing-table" role="table" aria-label="Sizing by product">
+    <thead id="thead">
+      <!-- generated -->
+    </thead>
+    <tbody id="tbody">
+      <!-- generated -->
+    </tbody>
+    <tfoot id="tfoot">
+      <!-- generated -->
+    </tfoot>
+  </table>
+</div>
 
-<div class="grand-totals printable">
-    <h2>Order Summary</h2>
+<div class="summary printable">
+  <div class="grand">
+    <h3 style="margin:0 0 8px 0;">Order Summary</h3>
     <div id="print-summary"></div>
-    <p><strong>Total Normal Price:</strong> RM <span id="grand-normal">0.00</span></p>
-    <p><strong>Total Promotion Price:</strong> RM <span id="grand-promo">0.00</span></p>
+    <p>Total Normal: RM <span id="grand-normal">0.00</span></p>
+    <p>Total Promo: RM <span id="grand-promo">0.00</span></p>
+  </div>
 </div>
 
 <script>
+/* ADULT PRODUCTS (no kids) */
 const products = [
-  { name: "KIDS SHORT SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 19.5, promo: 15.5 },
-  { name: "KIDS SHORT SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 25.5, promo: 20.5 },
-  { name: "KIDS LONG SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 21.5, promo: 18.5 },
-  { name: "KIDS LONG SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 31.5, promo: 23.5 },
-  { name: "ADULT SHORT SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 22.5, promo: 18.5 },
-  { name: "ADULT SHORT SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28.5, promo: 24.5 },
-  { name: "ADULT LONG SLEEVE", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 24.5, promo: 21.5 },
-  { name: "ADULT LONG SLEEVE", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 34.5, promo: 27.5 },
-  { name: "ADULT MUSLIMAH", neck: "R", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 28, promo: 28 },
-  { name: "ADULT MUSLIMAH", neck: "C", sizes: ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"], normal: 33, promo: 33 },
+  // For adult product prices: some use arrays (per-size) from your previous data; fallback uses last value
+  { key: "ADULT SS - R", normal: [19.5,19.5,19.5,19.5,19.5,19.5,19.5,22.5,25.5,27.5,29.5,31.5,33.5,35.5,37.5], promo: [15.5,15.5,15.5,15.5,15.5,15.5,15.5,18.5,21.5,23.5,25.5,27.5,29.5,31.5,33.5] },
+  { key: "ADULT SS - C", normal: [25.5,25.5,25.5,25.5,25.5,25.5,25.5,28.5,31.5,33.5,35.5,37.5,39.5,41.5,43.5], promo: [20.5,20.5,20.5,20.5,20.5,20.5,20.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5] },
+  { key: "ADULT LS - R", normal: [21.5,21.5,21.5,21.5,21.5,21.5,21.5,24.5,27.5,29.5,31.5,33.5,35.5,37.5,39.5], promo: [18.5,18.5,18.5,18.5,18.5,18.5,18.5,21.5,24.5,26.5,28.5,30.5,32.5,34.5,36.5] },
+  { key: "ADULT LS - C", normal: [31.5,31.5,31.5,31.5,31.5,31.5,31.5,34.5,37.5,39.5,41.5,43.5,45.5,47.5,49.5], promo: [23.5,23.5,23.5,23.5,23.5,23.5,23.5,27.5,30.5,32.5,34.5,36.5,38.5,40.5,42.5] },
+  { key: "ADULT MUSLIMAH - R", normal: 28.0, promo: 28.0 },
+  { key: "ADULT MUSLIMAH - C", normal: 33.0, promo: 33.0 }
 ];
 
-const tablesContainer = document.getElementById("tables");
+/* adult sizes XS -> 11XL */
+const sizes = ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"];
 
-products.forEach((product, idx) => {
-    const sizeLen = product.sizes.length;
-    const table = document.createElement("table");
-    table.className = "sizing-table";
-    
-    let html = "<thead><tr><th class='sticky-col'>Product (Neck)</th>";
-    product.sizes.forEach(size => html += `<th>${size}</th>`);
-    html += "<th>Total QTY</th><th>Total Normal</th><th>Total Promo</th></tr></thead>";
+/* helper to get price (handle scalar or array) */
+function getPrice(product, idx, type){
+  const v = product[type];
+  if(Array.isArray(v)){
+    if(idx < v.length) return Number(v[idx]);
+    return Number(v[v.length - 1]);
+  }
+  return Number(v);
+}
 
-    html += "<tbody><tr>";
-    html += `<td class='sticky-col'>${product.name} (${product.neck})</td>`;
-    for(let i=0;i<sizeLen;i++) html += `<td><input type='number' min='0' value='0' class='qty' data-idx='${idx}' data-size='${i}'></td>`;
-    html += "<td class='total-qty' data-idx='"+idx+"'>0</td><td class='total-sales-normal' data-idx='"+idx+"'>0.00</td><td class='total-sales-promo' data-idx='"+idx+"'>0.00</td></tr>";
+/* build thead */
+function buildTable(){
+  const thead = document.getElementById("thead");
+  const tbody = document.getElementById("tbody");
+  const tfoot = document.getElementById("tfoot");
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+  tfoot.innerHTML = "";
 
-    // Normal Price row
-    html += "<tr><td class='sticky-col'>Normal RM</td>";
-    for(let i=0;i<sizeLen;i++) {
-        const val = Array.isArray(product.normal)? product.normal[i] : product.normal;
-        const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
-        html += `<td class='${oversize}'>${val.toFixed(2)}</td>`;
-    }
-    html += "<td colspan='3'></td></tr>";
+  // thead: corner + product headers
+  let th = "<tr>";
+  th += `<th class="corner size-col">Size</th>`; // top-left corner sticky
+  products.forEach((p, pi) => {
+    th += `<th class="product-top" data-pidx="${pi}">${p.key}</th>`;
+  });
+  th += "</tr>";
+  thead.innerHTML = th;
 
-    // Promo Price row
-    html += "<tr><td class='sticky-col'>Promo RM</td>";
-    for(let i=0;i<sizeLen;i++) {
-        const val = Array.isArray(product.promo)? product.promo[i] : product.promo;
-        const oversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(product.sizes[i]) ? "oversized" : "";
-        html += `<td class='${oversize}'>${val.toFixed(2)}</td>`;
-    }
-    html += "<td colspan='3'></td></tr>";
+  // tbody: sizes as rows
+  sizes.forEach((sz, si) => {
+    let r = `<tr data-size="${si}">`;
+    r += `<td class="size-col">${sz}</td>`;
+    products.forEach((p, pi) => {
+      r += `<td><input class="qty" type="number" min="0" value="0" data-pidx="${pi}" data-sidx="${si}" aria-label="${p.key} ${sz} qty"></td>`;
+    });
+    r += `</tr>`;
+    tbody.insertAdjacentHTML('beforeend', r);
+  });
 
-    html += "</tbody>";
-    table.innerHTML = html;
-    tablesContainer.appendChild(table);
+  // tfoot: totals rows per product (Qty, Normal RM, Promo RM)
+  // first column labels are sticky (size-col)
+  let footQty = `<tr class="totals-row"><th class="size-col">Total QTY</th>`;
+  let footNormal = `<tr class="totals-row"><th class="size-col">Total Normal (RM)</th>`;
+  let footPromo = `<tr class="totals-row"><th class="size-col">Total Promo (RM)</th>`;
+  products.forEach((p,pi)=>{
+    footQty += `<td class="col-total-qty" data-pidx="${pi}">0</td>`;
+    footNormal += `<td class="col-total-normal" data-pidx="${pi}">0.00</td>`;
+    footPromo += `<td class="col-total-promo" data-pidx="${pi}">0.00</td>`;
+  });
+  footQty += `</tr>`; footNormal += `</tr>`; footPromo += `</tr>`;
+  tfoot.insertAdjacentHTML('beforeend', footQty);
+  tfoot.insertAdjacentHTML('beforeend', footNormal);
+  tfoot.insertAdjacentHTML('beforeend', footPromo);
+}
+
+/* calculate totals per product (column) & grand totals */
+function updateTotals(){
+  const qtyInputs = document.querySelectorAll("input.qty");
+  // init
+  const totals = products.map(()=>({qty:0, normal:0, promo:0}));
+  let grandNormal = 0, grandPromo = 0;
+
+  qtyInputs.forEach(inp=>{
+    const p = Number(inp.dataset.pidx);
+    const s = Number(inp.dataset.sidx);
+    const qty = Math.max(0, parseInt(inp.value)||0);
+    if(qty <= 0) return;
+    const norm = getPrice(products[p], s, 'normal');
+    const promo = getPrice(products[p], s, 'promo');
+    totals[p].qty += qty;
+    totals[p].normal += qty * norm;
+    totals[p].promo += qty * promo;
+    grandNormal += qty * norm;
+    grandPromo += qty * promo;
+  });
+
+  // write totals to footer
+  totals.forEach((t, i) => {
+    const tdQ = document.querySelector(`.col-total-qty[data-pidx="${i}"]`);
+    const tdN = document.querySelector(`.col-total-normal[data-pidx="${i}"]`);
+    const tdP = document.querySelector(`.col-total-promo[data-pidx="${i}"]`);
+    if(tdQ) tdQ.textContent = t.qty;
+    if(tdN) tdN.textContent = t.normal.toFixed(2);
+    if(tdP) tdP.textContent = t.promo.toFixed(2);
+  });
+
+  // update summary
+  const summaryRows = [];
+  totals.forEach((t,i)=>{
+    if(t.qty>0) summaryRows.push([products[i].key, t.qty, t.normal.toFixed(2), t.promo.toFixed(2)]);
+  });
+  let html = "<table style='border-collapse:collapse;width:100%'><tr style='background:#f0f0ff'><th style='text-align:left;padding:6px;border:1px solid var(--border)'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Normal (RM)</th><th style='padding:6px;border:1px solid var(--border)'>Promo (RM)</th></tr>";
+  summaryRows.forEach(r=> html += `<tr><td style='padding:6px;border:1px solid var(--border)'>${r[0]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[1]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[2]}</td><td style='padding:6px;border:1px solid var(--border)'>${r[3]}</td></tr>`);
+  html += "</table>";
+  document.getElementById("print-summary").innerHTML = html;
+  document.getElementById("grand-normal").textContent = grandNormal.toFixed(2);
+  document.getElementById("grand-promo").textContent = grandPromo.toFixed(2);
+}
+
+/* CSV export per product totals */
+function exportCSV(){
+  // ensure totals updated
+  updateTotals();
+  const rows = [["Item","Qty","Normal (RM)","Promo (RM)"]];
+  const qtyCells = document.querySelectorAll(".col-total-qty");
+  qtyCells.forEach(td=>{
+    const p = Number(td.dataset.pidx);
+    const qty = Number(td.textContent)||0;
+    if(qty === 0) return;
+    const norm = document.querySelector(`.col-total-normal[data-pidx="${p}"]`).textContent;
+    const promo = document.querySelector(`.col-total-promo[data-pidx="${p}"]`).textContent;
+    rows.push([products[p].key, qty, norm, promo]);
+  });
+  if(rows.length===1){ alert("No quantities entered."); return; }
+  const csv = "data:text/csv;charset=utf-8," + rows.map(r=> r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const link = document.createElement("a");
+  link.href = encodeURI(csv);
+  link.download = "jersey_summary.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+/* initial build */
+buildTable();
+
+/* live update via delegation for performance */
+document.getElementById("grid-wrap").addEventListener("input", (e)=>{
+  if(e.target && e.target.matches("input.qty")){
+    if(e.target.value === "" || Number(e.target.value) < 0) e.target.value = 0;
+    updateTotals();
+  }
 });
 
-// Totals and CSV code remain unchanged (same as previous)
-function updateTotals(){
-    const qtyInputs = document.querySelectorAll(".qty");
-    const totals = {};
-    let grandNormal = 0;
-    let grandPromo = 0;
-
-    qtyInputs.forEach(input=>{
-        const idx = input.dataset.idx;
-        const size = input.dataset.size;
-        const qty = parseInt(input.value)||0;
-        if(qty===0) return;
-        const product = products[idx];
-        const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
-        const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
-
-        totals[idx] = totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
-        totals[idx].qty += qty;
-        totals[idx].normal += qty*norm;
-        totals[idx].promo += qty*promo;
-
-        grandNormal += qty*norm;
-        grandPromo += qty*promo;
-    });
-
-    for(let i=0;i<products.length;i++){
-        const tdQty=document.querySelector(".total-qty[data-idx='"+i+"']");
-        const tdNormal=document.querySelector(".total-sales-normal[data-idx='"+i+"']");
-        const tdPromo=document.querySelector(".total-sales-promo[data-idx='"+i+"']");
-        if(totals[i]){
-            if(tdQty) tdQty.textContent=totals[i].qty;
-            if(tdNormal) tdNormal.textContent=totals[i].normal.toFixed(2);
-            if(tdPromo) tdPromo.textContent=totals[i].promo.toFixed(2);
-        }else{
-            if(tdQty) tdQty.textContent='0';
-            if(tdNormal) tdNormal.textContent='0.00';
-            if(tdPromo) tdPromo.textContent='0.00';
-        }
-    }
-
-    let summaryHTML="<table><tr><th>Item</th><th>Qty</th><th>Normal (RM)</th><th>Promo (RM)</th></tr>";
-    Object.values(totals).forEach(data=>{
-        summaryHTML+=`<tr><td>${data.name}</td><td>${data.qty}</td><td>${data.normal.toFixed(2)}</td><td>${data.promo.toFixed(2)}</td></tr>`;
-    });
-    summaryHTML+="</table>";
-    document.getElementById("print-summary").innerHTML=summaryHTML;
-    document.getElementById("grand-normal").textContent=grandNormal.toFixed(2);
-    document.getElementById("grand-promo").textContent=grandPromo.toFixed(2);
-}
-setInterval(updateTotals,300);
-
-function exportCSV(){
-    const rows=[["Item","Qty","Normal (RM)","Promo (RM)"]];
-    const qtyInputs = document.querySelectorAll(".qty");
-    const totals = {};
-
-    qtyInputs.forEach(input=>{
-        const idx=input.dataset.idx;
-        const size=input.dataset.size;
-        const qty=parseInt(input.value)||0;
-        if(qty===0) return;
-        const product = products[idx];
-        const norm = Array.isArray(product.normal)? product.normal[size]:product.normal;
-        const promo = Array.isArray(product.promo)? product.promo[size]:product.promo;
-        totals[idx]=totals[idx]||{name:product.name+" ("+product.neck+")", qty:0, normal:0, promo:0};
-        totals[idx].qty += qty;
-        totals[idx].normal += qty*norm;
-        totals[idx].promo += qty*promo;
-    });
-
-    Object.values(totals).forEach(data=>{
-        rows.push([data.name,data.qty,data.normal.toFixed(2),data.promo.toFixed(2)]);
-    });
-
-    const csvContent="data:text/csv;charset=utf-8,"+rows.map(e=>e.join(",")).join("\n");
-    const link=document.createElement("a");
-    link.setAttribute("href",encodeURI(csvContent));
-    link.setAttribute("download","jersey_price_summary.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+/* initial totals */
+updateTotals();
 </script>
-
 </body>
 </html>
