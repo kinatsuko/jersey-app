@@ -150,7 +150,15 @@
     <p>Total Promo: RM <span id="grand-promo">0.00</span></p>
   </div>
 </div>
-
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const headers = document.querySelectorAll("thead tr th:not(.size-col)");
+    headers.forEach((th, index) => {
+        const original = th.innerText.trim();
+        th.innerText = `${index + 1}. ${original}`;
+    });
+});
+</script>
 <script>
 /* ADULT PRODUCTS (no kids) */
 const products = [
@@ -305,3 +313,4 @@ updateTotals();
 </script>
 </body>
 </html>
+
