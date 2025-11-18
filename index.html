@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Jersey Sublimation Price (Daily) — Rotated (Sizes left) with Original Prices</title>
+
 <style>
   :root{
     --primary:#4400ff;
@@ -29,19 +30,18 @@
   }
   .controls button.secondary{ background:#fff; color:var(--primary); border:1px solid var(--border); }
 
-  /* wrapper that scrolls both axes */
   .sizing-wrapper{
     width:100%;
     border-radius:10px;
     background:#fff;
     border:1px solid var(--border);
-    overflow:auto; /* important */
+    overflow:auto;
     max-height:700px;
   }
 
   table.sizing-table{
     border-collapse:collapse;
-    width:max-content;       /* allow horizontal scrolling */
+    width:max-content;
     min-width:1100px;
   }
   table.sizing-table th, table.sizing-table td{
@@ -50,13 +50,12 @@
     white-space:nowrap;
     text-align:center;
     font-size:0.95rem;
-    background-clip: padding-box;
   }
 
-  /* TOP product headers sticky (stick on vertical scroll) */
+  /* top sticky */
   th.product-top{
-    position: sticky;
-    top: 0;
+    position:sticky;
+    top:0;
     background:#f0f0ff;
     z-index:40;
     font-weight:700;
@@ -64,14 +63,13 @@
     vertical-align:bottom;
   }
 
-  /* show small price under product name */
-  .product-title { display:block; font-weight:700; font-size:0.95rem; }
-  .product-price { display:block; font-size:0.85rem; color: #334155; margin-top:6px; }
+  .product-title{ display:block; font-weight:700; font-size:0.95rem; }
+  .product-price{ display:block; font-size:0.85rem; color:#334155; margin-top:6px; }
 
-  /* LEFT size column sticky */
-  td.size-col, th.size-col {
-    position: sticky;
-    left: 0;
+  /* left sticky */
+  td.size-col, th.size-col{
+    position:sticky;
+    left:0;
     background:#e8f8ff;
     z-index:45;
     font-weight:700;
@@ -80,11 +78,11 @@
     min-width:120px;
   }
 
-  /* top-left corner cell (empty label) must be above both */
-  th.corner {
-    position: sticky;
-    top: 0;
-    left: 0;
+  /* corner */
+  th.corner{
+    position:sticky;
+    top:0;
+    left:0;
     z-index:50;
     background:#f0f0ff;
     text-align:left;
@@ -92,10 +90,28 @@
     min-width:120px;
   }
 
-  /* oversize highlight */
-  td.oversized { background:var(--oversize-bg); color:var(--oversize-text); font-weight:700; }
+  /* oversized highlight */
+  td.oversized{
+    background:var(--oversize-bg);
+    color:var(--oversize-text);
+    font-weight:700;
+  }
 
-  input.qty {
+  /* Option A layout */
+  .cell-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .price-below{
+    margin-top:4px;
+    font-size:0.78rem;
+    color:#555;
+    font-weight:600;
+  }
+
+  input.qty{
     width:68px;
     padding:5px;
     border-radius:6px;
@@ -103,7 +119,10 @@
     text-align:center;
   }
 
-  .totals-row th, .totals-row td { background:#fff7f7; font-weight:700; }
+  .totals-row th, .totals-row td{
+    background:#fff7f7;
+    font-weight:700;
+  }
 
   .summary{
     display:flex;
@@ -111,17 +130,22 @@
     margin-top:12px;
     align-items:flex-start;
   }
-  .grand {
-    background:#fff; padding:12px; border-radius:8px; box-shadow:0 3px 10px rgba(10,10,20,0.03); border:1px solid var(--border);
+  .grand{
+    background:#fff; padding:12px;
+    border-radius:8px;
+    box-shadow:0 3px 10px rgba(10,10,20,0.03);
+    border:1px solid var(--border);
   }
   .grand p{ margin:6px 0; font-weight:600; }
-  @media print {
+
+  @media print{
     body *{ visibility:hidden; }
     .printable, .printable *{ visibility:visible; }
     .printable{ position:absolute; left:0; top:0; width:100% }
     .sizing-wrapper{ max-height:none; overflow:visible; }
   }
 </style>
+
 </head>
 <body>
 
@@ -134,16 +158,10 @@
 </div>
 
 <div class="sizing-wrapper printable" id="grid-wrap">
-  <table class="sizing-table" id="sizing-table" role="table" aria-label="Sizing by product">
-    <thead id="thead">
-      <!-- generated -->
-    </thead>
-    <tbody id="tbody">
-      <!-- generated -->
-    </tbody>
-    <tfoot id="tfoot">
-      <!-- generated -->
-    </tfoot>
+  <table class="sizing-table" id="sizing-table">
+    <thead id="thead"></thead>
+    <tbody id="tbody"></tbody>
+    <tfoot id="tfoot"></tfoot>
   </table>
 </div>
 
@@ -156,137 +174,133 @@
 </div>
 
 <script>
-/* Products & prices you provided (original price = normal). No kids. */
+/* Products */
 const products = [
   { key: "ADULT SHORT SLEEVE - R", normal: 22.5 },
   { key: "ADULT SHORT SLEEVE - C", normal: 28.5 },
   { key: "ADULT LONG SLEEVE - R", normal: 24.5 },
   { key: "ADULT LONG SLEEVE - C", normal: 34.5 },
   { key: "ADULT MUSLIMAH - R", normal: 28.0 },
-  { key: "ADULT MUSLIMAH - C", normal: 33.0 },
-  // If you have more products, add here; numbering is auto.
+  { key: "ADULT MUSLIMAH - C", normal: 33.0 }
 ];
 
-/* adult sizes XS -> 11XL */
+/* Sizes */
 const sizes = ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"];
 
-/* build table with products across top and sizes down left */
+/* Build table */
 function buildTable(){
-  const thead = document.getElementById("thead");
-  const tbody = document.getElementById("tbody");
-  const tfoot = document.getElementById("tfoot");
-  thead.innerHTML = "";
-  tbody.innerHTML = "";
-  tfoot.innerHTML = "";
+  const thead=document.getElementById("thead");
+  const tbody=document.getElementById("tbody");
+  const tfoot=document.getElementById("tfoot");
 
-  // thead: corner + product headers (auto-numbered)
-  let head = "<tr>";
-  head += `<th class="corner size-col">Size</th>`;
-  products.forEach((p, i) => {
-    // header shows auto-number + product name + price below
-    head += `<th class="product-top" data-pidx="${i}">
-               <span class="product-title">${i+1}. ${p.key}</span>
-               <span class="product-price">RM ${Number(p.normal).toFixed(2)}</span>
-             </th>`;
+  thead.innerHTML="";
+  tbody.innerHTML="";
+  tfoot.innerHTML="";
+
+  /* header */
+  let head="<tr>";
+  head+=`<th class="corner size-col">Size</th>`;
+  products.forEach((p,i)=>{
+    head+=`<th class="product-top"><span class="product-title">${i+1}. ${p.key}</span><span class="product-price">RM ${p.normal.toFixed(2)}</span></th>`;
   });
-  head += "</tr>";
-  thead.innerHTML = head;
+  head+="</tr>";
+  thead.innerHTML=head;
 
-  // tbody: sizes as rows
-  sizes.forEach((sz, si) => {
-    let row = `<tr data-size="${si}">`;
-    row += `<td class="size-col">${sz}</td>`;
-    products.forEach((p, pi) => {
-      // mark oversized columns visually for 4XL+
-      const isOversize = ["4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"].includes(sz);
-      row += `<td${isOversize ? ' class="oversized"' : ''}><input class="qty" type="number" min="0" value="0" data-pidx="${pi}" data-sidx="${si}" aria-label="${p.key} ${sz} qty"></td>`;
+  /* rows */
+  sizes.forEach((sz,si)=>{
+    let row=`<tr>`;
+    row+=`<td class="size-col">${sz}</td>`;
+    products.forEach((p,pi)=>{
+      const isOversize = si >= 5;
+      row+=`
+      <td ${isOversize?'class="oversized"':""}>
+        <div class="cell-wrap">
+          <input class="qty" type="number" min="0" value="0"
+            data-pidx="${pi}" data-sidx="${si}">
+          <div class="price-below">RM ${p.normal.toFixed(2)}</div>
+        </div>
+      </td>`;
     });
-    row += `</tr>`;
-    tbody.insertAdjacentHTML('beforeend', row);
+    row+="</tr>";
+    tbody.insertAdjacentHTML("beforeend", row);
   });
 
-  // tfoot: totals (per product) - Qty and Original Amount
-  let footQty = `<tr class="totals-row"><th class="size-col">Total QTY</th>`;
-  let footOrig = `<tr class="totals-row"><th class="size-col">Total Original (RM)</th>`;
-  products.forEach((p, pi) => {
-    footQty += `<td class="col-total-qty" data-pidx="${pi}">0</td>`;
-    footOrig += `<td class="col-total-orig" data-pidx="${pi}">0.00</td>`;
+  /* foot totals */
+  let foot1=`<tr class="totals-row"><th class="size-col">Total QTY</th>`;
+  let foot2=`<tr class="totals-row"><th class="size-col">Total Original (RM)</th>`;
+  products.forEach((p,pi)=>{
+    foot1+=`<td class="col-total-qty" data-pidx="${pi}">0</td>`;
+    foot2+=`<td class="col-total-orig" data-pidx="${pi}">0.00</td>`;
   });
-  footQty += `</tr>`;
-  footOrig += `</tr>`;
-  tfoot.insertAdjacentHTML('beforeend', footQty);
-  tfoot.insertAdjacentHTML('beforeend', footOrig);
+  foot1+="</tr>";
+  foot2+="</tr>";
+  tfoot.innerHTML=foot1+foot2;
 }
 
 /* compute totals */
 function updateTotals(){
-  const qtys = document.querySelectorAll("input.qty");
-  const totals = products.map(()=>({qty:0, orig:0}));
-  let grandOrig = 0;
+  const totals=products.map(()=>({qty:0,orig:0}));
+  let grandOrig=0;
 
-  qtys.forEach(inp=>{
-    const p = Number(inp.dataset.pidx);
-    const s = Number(inp.dataset.sidx);
-    const qty = Math.max(0, parseInt(inp.value) || 0);
-    if(qty <= 0) return;
-    const price = Number(products[p].normal);
-    totals[p].qty += qty;
-    totals[p].orig += qty * price;
-    grandOrig += qty * price;
+  document.querySelectorAll("input.qty").forEach(inp=>{
+    let qty=parseInt(inp.value)||0;
+    if(qty<0) qty=0;
+    const p=inp.dataset.pidx;
+    if(qty>0){
+      const price=products[p].normal;
+      totals[p].qty+=qty;
+      totals[p].orig+=qty*price;
+      grandOrig+=qty*price;
+    }
   });
 
-  totals.forEach((t, i) => {
-    const tdQ = document.querySelector(`.col-total-qty[data-pidx="${i}"]`);
-    const tdO = document.querySelector(`.col-total-orig[data-pidx="${i}"]`);
-    if(tdQ) tdQ.textContent = t.qty;
-    if(tdO) tdO.textContent = t.orig.toFixed(2);
-  });
-
-  // summary table
-  let summary = "<table style='border-collapse:collapse;width:100%'><tr style='background:#f0f0ff'><th style='text-align:left;padding:6px;border:1px solid var(--border)'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Original (RM)</th></tr>";
   totals.forEach((t,i)=>{
-    if(t.qty > 0) summary += `<tr><td style='padding:6px;border:1px solid var(--border)'>${i+1}. ${products[i].key}</td><td style='padding:6px;border:1px solid var(--border)'>${t.qty}</td><td style='padding:6px;border:1px solid var(--border)'>${t.orig.toFixed(2)}</td></tr>`;
+    document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent=t.qty;
+    document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent=t.orig.toFixed(2);
   });
-  summary += "</table>";
-  document.getElementById("print-summary").innerHTML = summary;
-  document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
+
+  /* summary */
+  let s="<table style='width:100%;border-collapse:collapse'>";
+  s+="<tr style='background:#f0f0ff'><th style='padding:6px;border:1px solid var(--border);text-align:left'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Original (RM)</th></tr>";
+  totals.forEach((t,i)=>{
+    if(t.qty>0){
+      s+=`<tr>
+            <td style='padding:6px;border:1px solid var(--border)'>${i+1}. ${products[i].key}</td>
+            <td style='padding:6px;border:1px solid var(--border)'>${t.qty}</td>
+            <td style='padding:6px;border:1px solid var(--border)'>${t.orig.toFixed(2)}</td>
+          </tr>`;
+    }
+  });
+  s+="</table>";
+  document.getElementById("print-summary").innerHTML=s;
+  document.getElementById("grand-normal").textContent=grandOrig.toFixed(2);
 }
 
-/* CSV export per product totals */
+/* CSV export */
 function exportCSV(){
   updateTotals();
-  const rows = [["Item","Qty","Original (RM)"]];
-  const qtyCells = document.querySelectorAll(".col-total-qty");
-  qtyCells.forEach(td=>{
-    const p = Number(td.dataset.pidx);
-    const qty = Number(td.textContent) || 0;
-    if(qty === 0) return;
-    const orig = document.querySelector(`.col-total-orig[data-pidx="${p}"]`).textContent;
-    rows.push([`${p+1}. ${products[p].key}`, qty, orig]);
+  const rows=[["Item","Qty","Original (RM)"]];
+  products.forEach((p,i)=>{
+    const qty=document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent;
+    const orig=document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent;
+    if(Number(qty)>0) rows.push([`${i+1}. ${p.key}`, qty, orig]);
   });
-  if(rows.length === 1){ alert("No quantities entered."); return; }
-  const csv = "data:text/csv;charset=utf-8," + rows.map(r=> r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
-  const link = document.createElement("a");
-  link.href = encodeURI(csv);
-  link.download = "jersey_original_summary.csv";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+  if(rows.length===1){ alert("No quantities"); return; }
+  const csv="data:text/csv;charset=utf-8,"+rows.map(r=>r.join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href=csv;
+  a.download="jersey_original_summary.csv";
+  a.click();
 }
 
 /* init */
 buildTable();
-
-/* update live (event delegation) */
-document.getElementById("grid-wrap").addEventListener("input", (e)=>{
-  if(e.target && e.target.matches("input.qty")){
-    if(e.target.value === "" || Number(e.target.value) < 0) e.target.value = 0;
-    updateTotals();
-  }
-});
-
-/* initial totals */
 updateTotals();
+
+/* live update */
+document.getElementById("grid-wrap").addEventListener("input",e=>{
+  if(e.target.matches(".qty")) updateTotals();
+});
 </script>
 
 </body>
