@@ -170,6 +170,21 @@
     <h3 style="margin:0 0 8px 0;">Order Summary</h3>
     <div id="print-summary"></div>
     <p>Total Original (RM): <span id="grand-normal">0.00</span></p>
+
+<p>Arrival Postage (RM):
+  <input type="number" id="arrival-postage" value="0" min="0" step="0.01"
+         style="width:100px; padding:4px; margin-left:8px;">
+</p>
+
+<p>Send-out Postage (RM):
+  <input type="number" id="send-postage" value="0" min="0" step="0.01"
+         style="width:100px; padding:4px; margin-left:8px;">
+</p>
+
+<p><strong>Grand Total + Postage (RM):</strong>
+  <span id="grand-total">0.00</span>
+</p>
+
   </div>
 </div>
 
@@ -273,7 +288,15 @@ function updateTotals(){
   });
   s+="</table>";
   document.getElementById("print-summary").innerHTML=s;
-  document.getElementById("grand-normal").textContent=grandOrig.toFixed(2);
+  document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
+
+/* postage */
+const arrival = parseFloat(document.getElementById("arrival-postage").value) || 0;
+const send = parseFloat(document.getElementById("send-postage").value) || 0;
+
+const grandWithPostage = grandOrig + arrival + send;
+document.getElementById("grand-total").textContent = grandWithPostage.toFixed(2);
+
 }
 
 /* CSV export */
@@ -299,10 +322,14 @@ updateTotals();
 
 /* live update */
 document.getElementById("grid-wrap").addEventListener("input",e=>{
+  document.getElementById("arrival-postage").addEventListener("input", updateTotals);
+document.getElementById("send-postage").addEventListener("input", updateTotals);
+
   if(e.target.matches(".qty")) updateTotals();
 });
 </script>
 
 </body>
 </html>
+
 
