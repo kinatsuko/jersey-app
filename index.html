@@ -274,20 +274,43 @@ function updateTotals(){
     document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent=t.orig.toFixed(2);
   });
 
-  /* summary */
-  let s="<table style='width:100%;border-collapse:collapse'>";
-  s+="<tr style='background:#f0f0ff'><th style='padding:6px;border:1px solid var(--border);text-align:left'>Item</th><th style='padding:6px;border:1px solid var(--border)'>Qty</th><th style='padding:6px;border:1px solid var(--border)'>Original (RM)</th></tr>";
-  totals.forEach((t,i)=>{
-    if(t.qty>0){
-      s+=`<tr>
-            <td style='padding:6px;border:1px solid var(--border)'>${i+1}. ${products[i].key}</td>
-            <td style='padding:6px;border:1px solid var(--border)'>${t.qty}</td>
-            <td style='padding:6px;border:1px solid var(--border)'>${t.orig.toFixed(2)}</td>
-          </tr>`;
+  /* summary with size breakdown */
+let s = "";
+
+/* build product summary */
+products.forEach((p, i) => {
+    let sizeBreakdown = "";
+    let totalQty = 0;
+    let totalOrig = 0;
+
+    sizes.forEach((sz, si) => {
+        const qtyInput = document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`);
+        const qty = parseInt(qtyInput.value) || 0;
+
+        if (qty > 0) {
+            sizeBreakdown += `${sz}: ${qty}<br>`;
+            totalQty += qty;
+            totalOrig += qty * p.normal;
+        }
+    });
+
+    if (totalQty > 0) {
+        s += `
+        <div style="margin-bottom:12px; padding:10px; border:1px solid var(--border); border-radius:6px; background:#fff;">
+            <div style="font-weight:700; color:#333;">${i + 1}. ${p.key}</div>
+            <div style="margin-left:12px; margin-top:4px; font-size:0.9rem; color:#444;">
+                ${sizeBreakdown}
+            </div>
+            <div style="margin-top:6px; font-weight:700;">
+                Total Qty: ${totalQty} &nbsp;&nbsp; | &nbsp;&nbsp;
+                RM ${totalOrig.toFixed(2)}
+            </div>
+        </div>`;
     }
-  });
-  s+="</table>";
-  document.getElementById("print-summary").innerHTML=s;
+});
+
+document.getElementById("print-summary").innerHTML = s;
+
   document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
 
 /* postage */
@@ -331,5 +354,6 @@ document.getElementById("send-postage").addEventListener("input", updateTotals);
 
 </body>
 </html>
+
 
 
