@@ -126,16 +126,25 @@
 
   .summary{
     display:flex;
-    gap:16px;
+    justify-content:center;   /* center the box */
     margin-top:12px;
-    align-items:flex-start;
-  }
-  .grand{
-    background:#fff; padding:12px;
-    border-radius:8px;
-    box-shadow:0 3px 10px rgba(10,10,20,0.03);
+}
+
+.grand{
+    width:80%;                /* wider summary box */
+    max-width:900px;          /* optional limit */
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 3px 10px rgba(10,10,20,0.05);
     border:1px solid var(--border);
-  }
+}
+
+  .grand h3{
+    text-align:center;
+}
+
   .grand p{ margin:6px 0; font-weight:600; }
 
   @media print{
@@ -354,6 +363,7 @@ document.getElementById("send-postage").addEventListener("input", updateTotals);
 
 </body>
 </html>
+
 
 
 
