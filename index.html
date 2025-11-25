@@ -180,7 +180,11 @@
   <div class="grand">
     <h3 style="margin:0 0 8px 0;">Order Summary</h3>
     <div id="print-summary"></div>
-    <p>Total Original (RM): <span id="grand-normal">0.00</span></p>
+
+    <!-- Separated totals: Print & Cut, Sewing, Combined -->
+    <p>Total Print & Cut (RM): <span id="grand-print">0.00</span></p>
+    <p>Total Sewing (RM): <span id="grand-sew">0.00</span></p>
+    <p><strong>Combined Total (RM):</strong> <span id="grand-combined">0.00</span></p>
 
 <p>Arrival Postage (RM):
   <input type="number" id="arrival-postage" value="0" min="0" step="0.01"
@@ -260,9 +264,9 @@ function buildTable(){
     tbody.insertAdjacentHTML("beforeend", row);
   });
 
-  /* foot totals */
+  /* foot totals (combined) */
   let foot1=`<tr class="totals-row"><th class="size-col">Total QTY</th>`;
-  let foot2=`<tr class="totals-row"><th class="size-col">Total Original (RM)</th>`;
+  let foot2=`<tr class="totals-row"><th class="size-col">Total (RM)</th>`;
   products.forEach((p,pi)=>{
     foot1+=`<td class="col-total-qty" data-pidx="${pi}">0</td>`;
     foot2+=`<td class="col-total-orig" data-pidx="${pi}">0.00</td>`;
@@ -274,35 +278,46 @@ function buildTable(){
 
 /* compute totals */
 function updateTotals(){
-  const totals=products.map(()=>({qty:0,orig:0}));
-  let grandOrig=0;
+  // totals per product: qty, printTotal, sewTotal, combinedTotal
+  const totals=products.map(()=>({qty:0,print:0,sew:0,combined:0}));
+  let grandPrint=0;
+  let grandSew=0;
+  let grandCombined=0;
 
   document.querySelectorAll("input.qty").forEach(inp=>{
     let qty=parseInt(inp.value)||0;
     if(qty<0) qty=0;
     const pIdx = parseInt(inp.dataset.pidx);
     if(qty>0){
-      const unitPrice = products[pIdx].normal + SEWING_CHARGE; // include sewing
-      totals[pIdx].qty+=qty;
-      totals[pIdx].orig+=qty*unitPrice;
-      grandOrig+=qty*unitPrice;
+      const printUnit = products[pIdx].normal;
+      const sewUnit = SEWING_CHARGE;
+      const combinedUnit = printUnit + sewUnit;
+
+      totals[pIdx].qty += qty;
+      totals[pIdx].print += qty * printUnit;
+      totals[pIdx].sew += qty * sewUnit;
+      totals[pIdx].combined += qty * combinedUnit;
+
+      grandPrint += qty * printUnit;
+      grandSew += qty * sewUnit;
+      grandCombined += qty * combinedUnit;
     }
   });
 
+  // update footer (combined totals)
   totals.forEach((t,i)=>{
     document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent=t.qty;
-    document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent=t.orig.toFixed(2);
+    document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent=t.combined.toFixed(2);
   });
 
-  /* summary with size breakdown */
+  /* build product summary with separated Print & Cut and Sewing totals */
   let s = "";
-
-  /* build product summary */
   products.forEach((p, i) => {
       let sizeBreakdown = "";
       let totalQty = 0;
-      let totalOrig = 0;
-      const unitPrice = p.normal + SEWING_CHARGE;
+      let totalPrint = 0;
+      let totalSew = 0;
+      let totalCombined = 0;
 
       sizes.forEach((sz, si) => {
           const qtyInput = document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`);
@@ -311,7 +326,9 @@ function updateTotals(){
           if (qty > 0) {
               sizeBreakdown += `${sz}: ${qty}<br>`;
               totalQty += qty;
-              totalOrig += qty * unitPrice;
+              totalPrint += qty * p.normal;
+              totalSew += qty * SEWING_CHARGE;
+              totalCombined += qty * (p.normal + SEWING_CHARGE);
           }
       });
 
@@ -324,7 +341,9 @@ function updateTotals(){
               </div>
               <div style="margin-top:6px; font-weight:700;">
                   Total Qty: ${totalQty} &nbsp;&nbsp; | &nbsp;&nbsp;
-                  RM ${totalOrig.toFixed(2)} <span style="font-weight:600; font-size:0.85rem; color:#666;">(includes sewing RM ${SEWING_CHARGE.toFixed(2)}/pc)</span>
+                  Print & Cut: RM ${totalPrint.toFixed(2)} &nbsp;&nbsp; | &nbsp;&nbsp;
+                  Sewing: RM ${totalSew.toFixed(2)} &nbsp;&nbsp; | &nbsp;&nbsp;
+                  <span style="color:#111;">Combined: RM ${totalCombined.toFixed(2)}</span>
               </div>
           </div>`;
       }
@@ -332,24 +351,37 @@ function updateTotals(){
 
   document.getElementById("print-summary").innerHTML = s;
 
-  document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
+  // update separated grand totals in summary
+  document.getElementById("grand-print").textContent = grandPrint.toFixed(2);
+  document.getElementById("grand-sew").textContent = grandSew.toFixed(2);
+  document.getElementById("grand-combined").textContent = grandCombined.toFixed(2);
 
   /* postage */
   const arrival = parseFloat(document.getElementById("arrival-postage").value) || 0;
   const send = parseFloat(document.getElementById("send-postage").value) || 0;
 
-  const grandWithPostage = grandOrig + arrival + send;
+  const grandWithPostage = grandCombined + arrival + send;
   document.getElementById("grand-total").textContent = grandWithPostage.toFixed(2);
 }
 
 /* CSV export */
 function exportCSV(){
   updateTotals();
-  const rows=[["Item","Qty","Original (RM)"]];
+  const rows=[["Item","Qty","Print & Cut (RM)","Sewing (RM)","Combined (RM)"]];
   products.forEach((p,i)=>{
-    const qty=document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent;
-    const orig=document.querySelector(`.col-total-orig[data-pidx="${i}"]`).textContent;
-    if(Number(qty)>0) rows.push([`${i+1}. ${p.key}`, qty, orig]);
+    const qty = Number(document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent) || 0;
+    if(qty>0){
+      // compute per-product totals for csv (consistent with summary)
+      // We can recompute from inputs to be safe
+      let printSum=0, sewSum=0;
+      sizes.forEach((sz,si)=>{
+        const q = parseInt(document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`).value) || 0;
+        printSum += q * p.normal;
+        sewSum += q * SEWING_CHARGE;
+      });
+      const combined = printSum + sewSum;
+      rows.push([`${i+1}. ${p.key}`, qty, printSum.toFixed(2), sewSum.toFixed(2), combined.toFixed(2)]);
+    }
   });
   if(rows.length===1){ alert("No quantities"); return; }
   const csv="data:text/csv;charset=utf-8,"+rows.map(r=>r.join(",")).join("\n");
