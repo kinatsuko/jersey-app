@@ -227,16 +227,25 @@ const SEWING_CHARGE = 2.00;
    We'll display "Print & Cut: RM X" and below it "Sewing: RM 2.00"
 */
 const products = [
-  { key: "S.SLEEVE - R", normal: 18.0 },
-  { key: "S.SLEEVE - C", normal: 23.0 },
-  { key: "L.SLEEVE - R", normal: 21.0 },
-  { key: "L.SLEEVE - C", normal: 26.0 },
-  { key: "MUSLIMAH - R", normal: 28.0 },
-  { key: "MUSLIMAH - C", normal: 33.0 }
+  { key: "S.SLEEVE - R", normal: 16.0 },
+  { key: "S.SLEEVE - C", normal: 21.0 },
+  { key: "L.SLEEVE - R", normal: 19.0 },
+  { key: "L.SLEEVE - C", normal: 24.0 },
+  { key: "MUSLIMAH - R", normal: 26.0 },
+  { key: "MUSLIMAH - C", normal: 31.0 }
 ];
 
 /* Sizes */
 const sizes = ["XS","S","M","L","XL","2XL","3XL","4XL","5XL","6XL","7XL","8XL","9XL","10XL","11XL"];
+
+/* Oversize surcharge:
+   starts at 3XL (index 6). 3XL +RM2, 4XL +RM4, ... 11XL +RM18
+   Formula: surcharge = max(0, (sidx - 5) * 2)
+*/
+function oversizeSurcharge(sizeIndex){
+  const surcharge = Math.max(0, (sizeIndex - 5) * 2);
+  return surcharge;
+}
 
 /* Build table */
 function buildTable(){
@@ -262,15 +271,17 @@ function buildTable(){
     let row=`<tr>`;
     row+=`<td class="size-col">${sz}</td>`;
     products.forEach((p,pi)=>{
-      const isOversize = si >= 5;
+      const surcharge = oversizeSurcharge(si);
+      const isOversize = surcharge > 0;
+      const displayPrint = (p.normal + surcharge);
       row+=`
       <td ${isOversize?'class="oversized"':""}>
         <div class="cell-wrap">
           <input class="qty" type="number" min="0" value="0"
             data-pidx="${pi}" data-sidx="${si}">
           <div class="price-below">
-            <span>Print & Cut: RM ${p.normal.toFixed(2)}</span>
-            <span class="sub">Sewing: RM ${SEWING_CHARGE.toFixed(2)}</span>
+            <span>Print & Cut: RM ${displayPrint.toFixed(2)}</span>
+            <span class="sub">Sewing: RM ${SEWING_CHARGE.toFixed(2)}${surcharge>0 ? ` &nbsp; | &nbsp; +RM ${surcharge.toFixed(2)} oversize` : ""}</span>
           </div>
         </div>
       </td>`;
@@ -303,8 +314,10 @@ function updateTotals(){
     let qty=parseInt(inp.value)||0;
     if(qty<0) qty=0;
     const pIdx = parseInt(inp.dataset.pidx);
+    const sIdx = parseInt(inp.dataset.sidx);
     if(qty>0){
-      const printUnit = products[pIdx].normal;
+      const surcharge = oversizeSurcharge(sIdx);
+      const printUnit = products[pIdx].normal + surcharge;
       const sewUnit = SEWING_CHARGE;
       const combinedUnit = printUnit + sewUnit;
 
@@ -340,11 +353,13 @@ function updateTotals(){
           const qty = parseInt(qtyInput.value) || 0;
 
           if (qty > 0) {
-              sizeBreakdown += `${sz}: ${qty}<br>`;
+              const surcharge = oversizeSurcharge(si);
+              const unitPrint = p.normal + surcharge;
+              sizeBreakdown += `${sz}: ${qty}${surcharge > 0 ? ` (Print RM ${unitPrint.toFixed(2)})` : ""}<br>`;
               totalQty += qty;
-              totalPrint += qty * p.normal;
+              totalPrint += qty * unitPrint;
               totalSew += qty * SEWING_CHARGE;
-              totalCombined += qty * (p.normal + SEWING_CHARGE);
+              totalCombined += qty * (unitPrint + SEWING_CHARGE);
           }
       });
 
@@ -389,12 +404,16 @@ function exportCSV(){
     const qty = Number(document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent) || 0;
     if(qty>0){
       // compute per-product totals for csv (consistent with summary)
-      // We can recompute from inputs to be safe
+      // We recompute from inputs to be safe
       let printSum=0, sewSum=0;
       sizes.forEach((sz,si)=>{
         const q = parseInt(document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`).value) || 0;
-        printSum += q * p.normal;
-        sewSum += q * SEWING_CHARGE;
+        if(q>0){
+          const surcharge = oversizeSurcharge(si);
+          const unitPrint = p.normal + surcharge;
+          printSum += q * unitPrint;
+          sewSum += q * SEWING_CHARGE;
+        }
       });
       const combined = printSum + sewSum;
       rows.push([`${i+1}. ${p.key}`, qty, printSum.toFixed(2), sewSum.toFixed(2), combined.toFixed(2)]);
@@ -424,5 +443,3 @@ document.getElementById("grid-wrap").addEventListener("input",e=>{
 
 </body>
 </html>
-
-
