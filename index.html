@@ -384,7 +384,7 @@ function updateTotals(){
 /* CSV export */
 function exportCSV(){
   updateTotals();
-  const rows=[["Item","Qty","Print & Cut (RM)","Sewing (RM)","Combined (RM)"]];
+  const rows=[["Item","Qty","Print & Cut (RM)","Sewing (RM)","Total (RM)"]];
   products.forEach((p,i)=>{
     const qty = Number(document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent) || 0;
     if(qty>0){
@@ -424,3 +424,4 @@ document.getElementById("grid-wrap").addEventListener("input",e=>{
 
 </body>
 </html>
+
