@@ -111,6 +111,8 @@
     font-weight:600;
   }
 
+  .price-below .sub{ display:block; font-size:0.75rem; color:#666; font-weight:500; margin-top:4px; }
+
   input.qty{
     width:68px;
     padding:5px;
@@ -198,7 +200,13 @@
 </div>
 
 <script>
-/* Products */
+/* Sewing charge per jersey */
+const SEWING_CHARGE = 2.00;
+
+/* Products
+   'normal' is the current Print & Cut price per jersey.
+   We'll display "Print & Cut: RM X" and below it "Sewing: RM 2.00"
+*/
 const products = [
   { key: "S.SLEEVE - R", normal: 22.5 },
   { key: "S.SLEEVE - C", normal: 28.5 },
@@ -241,7 +249,10 @@ function buildTable(){
         <div class="cell-wrap">
           <input class="qty" type="number" min="0" value="0"
             data-pidx="${pi}" data-sidx="${si}">
-          <div class="price-below">RM ${p.normal.toFixed(2)}</div>
+          <div class="price-below">
+            <span>Print & Cut: RM ${p.normal.toFixed(2)}</span>
+            <span class="sub">Sewing: RM ${SEWING_CHARGE.toFixed(2)}</span>
+          </div>
         </div>
       </td>`;
     });
@@ -269,12 +280,12 @@ function updateTotals(){
   document.querySelectorAll("input.qty").forEach(inp=>{
     let qty=parseInt(inp.value)||0;
     if(qty<0) qty=0;
-    const p=inp.dataset.pidx;
+    const pIdx = parseInt(inp.dataset.pidx);
     if(qty>0){
-      const price=products[p].normal;
-      totals[p].qty+=qty;
-      totals[p].orig+=qty*price;
-      grandOrig+=qty*price;
+      const unitPrice = products[pIdx].normal + SEWING_CHARGE; // include sewing
+      totals[pIdx].qty+=qty;
+      totals[pIdx].orig+=qty*unitPrice;
+      grandOrig+=qty*unitPrice;
     }
   });
 
@@ -284,51 +295,51 @@ function updateTotals(){
   });
 
   /* summary with size breakdown */
-let s = "";
+  let s = "";
 
-/* build product summary */
-products.forEach((p, i) => {
-    let sizeBreakdown = "";
-    let totalQty = 0;
-    let totalOrig = 0;
+  /* build product summary */
+  products.forEach((p, i) => {
+      let sizeBreakdown = "";
+      let totalQty = 0;
+      let totalOrig = 0;
+      const unitPrice = p.normal + SEWING_CHARGE;
 
-    sizes.forEach((sz, si) => {
-        const qtyInput = document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`);
-        const qty = parseInt(qtyInput.value) || 0;
+      sizes.forEach((sz, si) => {
+          const qtyInput = document.querySelector(`input.qty[data-pidx="${i}"][data-sidx="${si}"]`);
+          const qty = parseInt(qtyInput.value) || 0;
 
-        if (qty > 0) {
-            sizeBreakdown += `${sz}: ${qty}<br>`;
-            totalQty += qty;
-            totalOrig += qty * p.normal;
-        }
-    });
+          if (qty > 0) {
+              sizeBreakdown += `${sz}: ${qty}<br>`;
+              totalQty += qty;
+              totalOrig += qty * unitPrice;
+          }
+      });
 
-    if (totalQty > 0) {
-        s += `
-        <div style="margin-bottom:12px; padding:10px; border:1px solid var(--border); border-radius:6px; background:#fff;">
-            <div style="font-weight:700; color:#333;">${i + 1}. ${p.key}</div>
-            <div style="margin-left:12px; margin-top:4px; font-size:0.9rem; color:#444;">
-                ${sizeBreakdown}
-            </div>
-            <div style="margin-top:6px; font-weight:700;">
-                Total Qty: ${totalQty} &nbsp;&nbsp; | &nbsp;&nbsp;
-                RM ${totalOrig.toFixed(2)}
-            </div>
-        </div>`;
-    }
-});
+      if (totalQty > 0) {
+          s += `
+          <div style="margin-bottom:12px; padding:10px; border:1px solid var(--border); border-radius:6px; background:#fff;">
+              <div style="font-weight:700; color:#333;">${i + 1}. ${p.key}</div>
+              <div style="margin-left:12px; margin-top:4px; font-size:0.9rem; color:#444;">
+                  ${sizeBreakdown}
+              </div>
+              <div style="margin-top:6px; font-weight:700;">
+                  Total Qty: ${totalQty} &nbsp;&nbsp; | &nbsp;&nbsp;
+                  RM ${totalOrig.toFixed(2)} <span style="font-weight:600; font-size:0.85rem; color:#666;">(includes sewing RM ${SEWING_CHARGE.toFixed(2)}/pc)</span>
+              </div>
+          </div>`;
+      }
+  });
 
-document.getElementById("print-summary").innerHTML = s;
+  document.getElementById("print-summary").innerHTML = s;
 
   document.getElementById("grand-normal").textContent = grandOrig.toFixed(2);
 
-/* postage */
-const arrival = parseFloat(document.getElementById("arrival-postage").value) || 0;
-const send = parseFloat(document.getElementById("send-postage").value) || 0;
+  /* postage */
+  const arrival = parseFloat(document.getElementById("arrival-postage").value) || 0;
+  const send = parseFloat(document.getElementById("send-postage").value) || 0;
 
-const grandWithPostage = grandOrig + arrival + send;
-document.getElementById("grand-total").textContent = grandWithPostage.toFixed(2);
-
+  const grandWithPostage = grandOrig + arrival + send;
+  document.getElementById("grand-total").textContent = grandWithPostage.toFixed(2);
 }
 
 /* CSV export */
@@ -353,18 +364,14 @@ buildTable();
 updateTotals();
 
 /* live update */
-document.getElementById("grid-wrap").addEventListener("input",e=>{
-  document.getElementById("arrival-postage").addEventListener("input", updateTotals);
+/* wire postage inputs once */
+document.getElementById("arrival-postage").addEventListener("input", updateTotals);
 document.getElementById("send-postage").addEventListener("input", updateTotals);
 
+document.getElementById("grid-wrap").addEventListener("input",e=>{
   if(e.target.matches(".qty")) updateTotals();
 });
 </script>
 
 </body>
 </html>
-
-
-
-
-
