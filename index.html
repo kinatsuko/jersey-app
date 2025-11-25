@@ -227,10 +227,10 @@ const SEWING_CHARGE = 2.00;
    We'll display "Print & Cut: RM X" and below it "Sewing: RM 2.00"
 */
 const products = [
-  { key: "S.SLEEVE - R", normal: 22.5 },
-  { key: "S.SLEEVE - C", normal: 28.5 },
-  { key: "L.SLEEVE - R", normal: 24.5 },
-  { key: "L.SLEEVE - C", normal: 34.5 },
+  { key: "S.SLEEVE - R", normal: 18.0 },
+  { key: "S.SLEEVE - C", normal: 23.0 },
+  { key: "L.SLEEVE - R", normal: 21.0 },
+  { key: "L.SLEEVE - C", normal: 26.0 },
   { key: "MUSLIMAH - R", normal: 28.0 },
   { key: "MUSLIMAH - C", normal: 33.0 }
 ];
@@ -384,7 +384,7 @@ function updateTotals(){
 /* CSV export */
 function exportCSV(){
   updateTotals();
-  const rows=[["Item","Qty","Print & Cut (RM)","Sewing (RM)","Total (RM)"]];
+  const rows=[["Item","Qty","Print & Cut (RM)","Sewing (RM)","Combined (RM)"]];
   products.forEach((p,i)=>{
     const qty = Number(document.querySelector(`.col-total-qty[data-pidx="${i}"]`).textContent) || 0;
     if(qty>0){
@@ -424,4 +424,5 @@ document.getElementById("grid-wrap").addEventListener("input",e=>{
 
 </body>
 </html>
+
 
